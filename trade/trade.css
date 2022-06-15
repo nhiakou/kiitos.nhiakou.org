@@ -1,0 +1,58 @@
+html {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+body {
+    width: 500px;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+}
+
+header {
+    flex: 1;
+}
+
+main {
+    flex: 1;
+}
+
+footer {
+    flex: 1;
+}
+
+header aside {
+    text-align: center;
+}
+
+h1 {
+    font-size: 25pt;
+}
+
+h2 {
+    color: purple;
+}
+
+aside h3 span {
+    background-color: lightyellow;
+    color: blue;
+}
+
+legend {
+    font-size: 16pt;
+    color: darkslategray;
+}
+
+.price {
+    background-color: lightskyblue;
+}
+
+.bid {
+    background-color: lightgreen;
+}
+
+.stats {
+    background-color: lightpink;
+}

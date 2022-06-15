@@ -1,0 +1,143 @@
+<html>
+    <head>
+        <title>Kiitos Robot</title>
+        <link rel="icon" href="/logo.png">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/trade/trade.css">
+        <script src="/astro/astrochart.min.js"></script>
+        <script src="/trade/trade.js" type="module"></script>
+    </head>
+    <body>
+        <header>
+            <aside>
+                <figure id="horoscope"></figure>
+                <h1 id="synodic-time"></h1>
+                <h2 id="sidereal-time"></h2>
+                <h3>Sun: <span id="sun-sign"></span></h3>
+                <h3>Moon: <span id="moon-sign"></span></h3>
+                <h3>Earth: <span id="earth-as"></span></h3>
+                <h3>Earth: <span id="earth-mc"></span></h3>
+            </aside>
+            <fieldset>
+                <legend>Market: BRK.B</legend>
+                <article class="bid">
+                    <h3>Bid Price: <span id="BRK.B-bid-price"></span></h3>
+                    <h3>Bid Size: <span id="BRK.B-bid-size"></span></h3>
+                    <h3>Ask Price: <span id="BRK.B-ask-price"></span></h3>
+                    <h3>Ask Size: <span id="BRK.B-ask-size"></span></h3>
+                    <h3>High Price: <span id="BRK.B-high-price"></span></h3>
+                    <h3>Low Price: <span id="BRK.B-low-price"></span></h3>
+                </article>
+                <section>
+                    <button id="start" onclick="startAnalyzing()">Start</button>
+                    <button id="stop" onclick="stopAnalyzing()">Stop</button>
+                </section>
+                <article class="price">
+                    <h3>Current Price: <span id="BRK.B-price"></span></h3>
+                    <h3>$ Price Change: <span id="BRK.B-dollar-price-change"></span></h3>
+                    <h3>% Price Change: <span id="BRK.B-percent-price-change"></span></h3>
+                    <h3>Open Price: <span id="BRK.B-open-price"></span></h3>
+                    <h3>Close Price: <span id="BRK.B-close-price"></span></h3>
+                    <!--<h3>Net Change: <span id="BRK.B-net-change"></span></h3>-->
+                    <h3>Total Volume: <span id="BRK.B-total-volume"></span></h3>
+                </article>
+                <article class="stats">
+                    <h3>P/E Ratio: <span id="BRK.B-pe-ratio"></span></h3>
+                    <h3>Volatility: <span id="BRK.B-volatility"></span></h3>
+                    <h3>52-Week High: <span id="BRK.B-52wk-high"></span></h3>
+                    <h3>52-Week Low: <span id="BRK.B-52wk-low"></span></h3>
+                </article>
+            </fieldset>
+        </header>
+        <br />
+        <main>
+            <fieldset>
+                <legend>Short Margin Position: SQ</legend>
+                <article>
+                    <h2>$ Profit: <span id="SQ-dollar-profit">$0</span></h2>
+                    <h2>% Profit: <span id="SQ-percent-profit">0%</span></h2>
+                </article>
+                <article>
+                    <h3>Current Price: <span id="SQ-price"></span></h3>
+                    <h3>Average Cost: <span id="SQ-cost">$0</span></h3>
+                    <h3>Quantity: <span id="SQ-quantity">0</span></h3>
+                </article>
+                <section>
+                    <button id="SQ-buy">Buy Now</button>
+                    <button id="SQ-sell">Sell Now</button>
+                </section>
+                <section>
+                    <button id="SQ-borrow">Borrow Now</button>
+                    <button id="SQ-return">Return Now</button>
+                </section>
+                <article class="price">
+                    <h3>$ Price Change: <span id="SQ-dollar-price-change"></span></h3>
+                    <h3>% Price Change: <span id="SQ-percent-price-change"></span></h3>
+                    <h3>Open Price: <span id="SQ-open-price"></span></h3>
+                    <h3>Close Price: <span id="SQ-close-price"></span></h3>
+                    <!--<h3>Net Change: <span id="SQ-net-change"></span></h3>-->
+                    <h3>Total Volume: <span id="SQ-total-volume"></span></h3>
+                </article>
+                <article class="bid">
+                    <h3>Bid Price: <span id="SQ-bid-price"></span></h3>
+                    <h3>Bid Size: <span id="SQ-bid-size"></span></h3>
+                    <h3>Ask Price: <span id="SQ-ask-price"></span></h3>
+                    <h3>Ask Size: <span id="SQ-ask-size"></span></h3>
+                    <h3>High Price: <span id="SQ-high-price"></span></h3>
+                    <h3>Low Price: <span id="SQ-low-price"></span></h3>
+                </article>
+                <article class="stats">
+                    <h3>P/E Ratio: <span id="SQ-pe-ratio"></span></h3>
+                    <h3>Volatility: <span id="SQ-volatility"></span></h3>
+                    <h3>52-Week High: <span id="SQ-52wk-high"></span></h3>
+                    <h3>52-Week Low: <span id="SQ-52wk-low"></span></h3>
+                </article>
+            </fieldset>
+        </main>
+        <br />
+        <footer>
+            <fieldset>
+                <legend>Long Cash Position: AAPL</legend>
+                <article>
+                    <h2>$ Profit: <span id="AAPL-dollar-profit">$0</span></h2>
+                    <h2>% Profit: <span id="AAPL-percent-profit">0%</span></h2>
+                </article>
+                <article>
+                    <h3>Current Price: <span id="AAPL-price"></span></h3>
+                    <h3>Average Cost: <span id="AAPL-cost">$0</span></h3>
+                    <h3>Quantity: <span id="AAPL-quantity">0</span></h3>
+                </article>
+                <section>
+                    <button id="AAPL-buy">Buy Now</button>
+                    <button id="AAPL-sell">Sell Now</button>
+                </section>
+                <section style="display:none">
+                    <button id="AAPL-borrow">Borrow Now</button>
+                    <button id="AAPL-return">Return Now</button>
+                </section>
+                <article class="price">
+                    <h3>$ Price Change: <span id="AAPL-dollar-price-change"></span></h3>
+                    <h3>% Price Change: <span id="AAPL-percent-price-change"></span></h3>
+                    <h3>Open Price: <span id="AAPL-open-price"></span></h3>
+                    <h3>Close Price: <span id="AAPL-close-price"></span></h3>
+                    <!--<h3>Net Change: <span id="AAPL-net-change"></span></h3>-->
+                    <h3>Total Volume: <span id="AAPL-total-volume"></span></h3>
+                </article>
+                <article class="bid">
+                    <h3>Bid Price: <span id="AAPL-bid-price"></span></h3>
+                    <h3>Bid Size: <span id="AAPL-bid-size"></span></h3>
+                    <h3>Ask Price: <span id="AAPL-ask-price"></span></h3>
+                    <h3>Ask Size: <span id="AAPL-ask-size"></span></h3>
+                    <h3>High Price: <span id="AAPL-high-price"></span></h3>
+                    <h3>Low Price: <span id="AAPL-low-price"></span></h3>
+                </article>
+                <article class="stats">
+                    <h3>P/E Ratio: <span id="AAPL-pe-ratio"></span></h3>
+                    <h3>Volatility: <span id="AAPL-volatility"></span></h3>
+                    <h3>52-Week High: <span id="AAPL-52wk-high"></span></h3>
+                    <h3>52-Week Low: <span id="AAPL-52wk-low"></span></h3>
+                </article>
+            </fieldset>
+        </footer>
+    </body>
+</html>

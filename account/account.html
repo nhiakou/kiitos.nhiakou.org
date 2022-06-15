@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>Kiitos Summary</title>
+        <link rel="icon" href="/logo.png">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="account/account.css">
+        <script src="astro/astrochart.min.js"></script>
+        <script src="account/account.js" type="module"></script>
+    </head>
+    <body>
+        <header>
+            <figure id="horoscope"></figure>
+            <h1 id="synodic-time"></h1>
+            <h2 id="sidereal-time"></h2>
+            <h3>Sun: <span id="sun-sign"></span></h3>
+            <h3>Moon: <span id="moon-sign"></span></h3>
+            <h3>Earth: <span id="earth-as"></span></h3>
+            <h3>Earth: <span id="earth-mc"></span></h3>
+        </header>
+        <main>
+            <fieldset>
+                <legend>HeartBank®: Silicon Wat LLC</legend>
+                <article>
+                    <h2 class="power">Buying Power</h2>
+                    <h3>Cash: <span id="available-cash"></span></h3>
+                    <h3>Margin: <span id="available-margin"></span></h3>
+                </article>
+                <article>
+                    <h2 class="margin">Margin</h2>
+                    <h3>Balance: <span id="margin-balance"></span></h3>
+                    <h3>Daily Interest: <span id="daily-interest"></span></h3>
+                </article>
+                <article>
+                    <h2 class="requirement">Requirement</h2>
+                    <h3>Equity: <span id="margin-equity"></span></h3>
+                    <h3>Collateral: <span id="margin-requirement"></span></h3>
+                </article>
+            </fieldset>
+        </main>
+        <footer id="calendar"></footer>
+    </body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "name": "kiitos.nhiakou.org",
+  "version": "1.0.0",
+  "description": "Kiitos",
+  "main": "kiitos.mjs",
+  "scripts": {
+    "start": "nodemon kiitos.mjs",
+    "test": "",
+    "build1": "browserify libraries/LST.mjs -p esmify --s LST > libraries/LST.min.js",
+    "build2": "browserify libraries/Astro.js --s Astro > libraries/Astro.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nhiakou/kiitos.nhiakou.org.git"
+  },
+  "author": "Thon Ly",
+  "license": "THonly™",
+  "bugs": {
+    "url": "https://github.com/nhiakou/kiitos.nhiakou.org/issues"
+  },
+  "homepage": "https://github.com/nhiakou/kiitos.nhiakou.org#readme",
+  "dependencies": {
+    "circular-natal-horoscope-js": "^1.1.0",
+    "express": "^4.18.0",
+    "local-sidereal-time": "^1.0.4",
+    "node-fetch": "^3.2.6",
+    "puppeteer": "^14.4.0"
+  },
+  "devDependencies": {
+    "browser-resolve": "^2.0.0",
+    "browserify": "^17.0.0",
+    "esmify": "^2.1.1",
+    "resolve": "^1.22.0"
+  }
+}
