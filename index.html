@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="index.css">
         <script src="index.js" type="module"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-532EHXLL26"></script>
     </head>
     <body>
         <header>
@@ -17,21 +18,15 @@
                 <input id="username" type="text">
                 <br><br>
                 <label for="password">Password:</label>
-                <input id="password" type="password">                
-            </fieldset>
-            <br>
-            <fieldset>
-                <legend>TDA API</legend>
-                <label for="client">Client ID:</label>
-                <input id="client" type="text">
+                <input id="password" type="password">            
                 <br><br>
-                <label for="account">Account ID:</label>
-                <input id="account" type="text">
+                <input id="remember" type="checkbox" onchange="remember()"> 
+                <label for="remember">Remember Me</label>
             </fieldset>
         </main>
         <footer>
             <br>
-            <button onclick="login()">Renew Refresh Token</button>
+            <button onclick="login(this)">Renew Refresh Token</button>
         </footer>
     </body>
 </html>
