@@ -1,4 +1,4 @@
-import { formatToDollar, formatToPercent, formatToDollars, formatToQuantity } from "../utils.mjs";
+import { formatToDollar, formatToPercent, formatToDollars, formatToQuantity } from "/utils.mjs";
 
 export function renderPositions(positions) {
     positions.securitiesAccount.positions.filter(position => position.instrument.symbol === 'AAPL' || position.instrument.symbol === 'SQ').forEach(position => {

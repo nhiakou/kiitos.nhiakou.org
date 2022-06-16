@@ -1,4 +1,4 @@
-import { placeMarketOrder } from './robot/god.mjs';
+import { placeMarketOrder } from '../tda.mjs';
 
 const QUANTITY = 25;
 

@@ -1,6 +1,6 @@
 import { createNatalChart, renderAstro } from './render/astro.mjs';
-import { renderAccount } from './render/account.mjs';
 import { getTDA } from './tda.mjs';
+import { renderAccount } from './render/account.mjs';
 import { renderSummary } from './render/summary.mjs';
 
 window.onload = async () => {

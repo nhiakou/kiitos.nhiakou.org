@@ -1,16 +1,21 @@
-import { renderTradePage } from "../render.mjs";
+import { getTDA } from '../tda.mjs';
+import { renderAstro } from '../render/astro.mjs';
+import { renderMarket } from '../render/market.mjs';
+import { renderPositions } from '../render/positions.mjs';
+import { renderButtons } from '../render/buttons.mjs';
 
 export async function analyzeStocks() {
     const data = await renderTradePage();
     console.log(data);
 }
 
-export async function placeMarketOrder(order, symbol, quantity) {
-    // const response = await fetch('/tda', {
-    //     method: 'POST',
-    //     headers: {'Content-Type': 'application/json'},
-    //     body: JSON.stringify({ order, symbol, quantity })
-    //     });
-        
-    // return response.json();
+export async function renderTradePage() {
+    const data = await getTDA();
+    renderAstro(data.stocks['BRK.A']);
+
+    renderMarket(data.stocks);
+    renderPositions(data.positions);
+    renderButtons();
+
+    return data;
 }

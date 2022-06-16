@@ -1,4 +1,4 @@
-import { formatToDollar, formatToPercent, formatToDollars, formatToPercents, formatToQuantity } from "../utils.mjs";
+import { formatToDollar, formatToPercent, formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 
 export function renderMarket(stocks) {
     ['BRK.B', 'AAPL', 'SQ'].forEach(stock => {

@@ -1,5 +1,5 @@
-import { renderTradePage } from './render.mjs';
-import { analyzeStocks } from './robot/god.mjs';
+import { getOrders } from './tda.mjs';
+import { analyzeStocks, renderTradePage } from './robot/god.mjs';
 
 let intervalID = null;
 
@@ -13,4 +13,5 @@ window.stopAnalyzing = () => {
 
 window.onload = async () => {
     await renderTradePage();
+    console.log(await getOrders());
 }
