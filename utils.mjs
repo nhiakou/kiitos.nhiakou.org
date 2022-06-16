@@ -23,3 +23,27 @@ export function formatToQuantity(quantity) {
     const formatter = new Intl.NumberFormat('en-US');
     return formatter.format(quantity);
 }
+
+export async function getData(url='', data = {}) {
+    const response = await fetch(url + '?' + new URLSearchParams(data), {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+        }
+    });
+    
+    return response.json();
+}
+  
+export async function postData(url = '', data = {}) {
+    const response = await fetch(url, {
+        method: 'POST', 
+        headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('access_token'), 
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    
+    return response.text();
+}

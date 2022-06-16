@@ -1,7 +1,10 @@
 import LST from 'local-sidereal-time';
 
-export function getLST(longitude) {
-  const totalSeconds = LST.getLST(new Date(), longitude)*60*60;
+export function getLST(utc) {
+  const date = utc ? new Date(parseInt(utc)) : new Date();
+  const lst = LST.getLST(date, -119.7938046);
+
+  const totalSeconds = lst*60*60;
   const h = Math.floor(totalSeconds / 3600);
   const m = Math.floor(totalSeconds % 3600 / 60);
   const s = Math.floor(totalSeconds % 3600 % 60);

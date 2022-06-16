@@ -1,7 +1,6 @@
-import { animateTransit } from '/astro/natal.chart.mjs';
-import { getTransitHoroscope } from '/astro/transit.chart.mjs';
-import { renderAstro } from './render.astro.mjs';
-import { formatToDollar, formatToDollars } from "../utils.mjs";
+import { transitHoroscope } from '/astro/transit.mjs';
+import { animateTransit, renderAstro } from './astro.mjs';
+import { formatToDollar, formatToDollars } from "/utils.mjs";
 
 function createSummaryDataStructure(history) {
   const summary = [];
@@ -70,15 +69,15 @@ export function renderSummary(history) {
         thead.append(trhead);
         trhead.append(th1, th2, th3, th4, th5, th6, th7, th8, th9);
 
-        days.forEach(async transaction => {
+        days.forEach(transaction => {
           const date = new Date(transaction.transactionDate);
-          const { planets, cusps, Sun, Moon, Earth } = await getTransitHoroscope(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
+          const { planets, cusps, Sun, Moon, Earth } = transitHoroscope(date);
           const tr = document.createElement('tr');
-          tr.addEventListener('click', async () => {
+          tr.addEventListener('click', () => {
             //window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             document.getElementById('horoscope').scrollIntoView({ behavior: "smooth", block: "start", inline: "center" });
             const transit = animateTransit(planets, cusps);
-            await renderAstro(date, { Sun, Moon, Earth });
+            renderAstro(date, { Sun, Moon, Earth });
           });
 
           const td1 = document.createElement('td');

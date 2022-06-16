@@ -1,4 +1,4 @@
-import { formatToDollar } from "../utils.mjs";
+import { formatToDollar } from "/utils.mjs";
 
 export function renderAccount(account) {
     formatToDollar(document.getElementById('available-cash'), account.securitiesAccount.currentBalances.cashBalance);
