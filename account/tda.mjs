@@ -1,4 +1,4 @@
-import { getData } from "/utils.mjs";
+import { getData } from "/login/fetch.mjs";
 
 export async function getTDA() {
     const account = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: '' });

@@ -1,11 +1,18 @@
+import { hasExpired } from "./fetch.mjs";
+
 const username = document.getElementById('username');
 const password = document.getElementById('password');
 const remember = document.getElementById('remember');
 
+// refresh token expires after 7776000 seconds = 90 days
 window.onload = () => {
-    username.value = localStorage.getItem('username') || "";
-    password.value = localStorage.getItem('password') || "";
-    remember.checked = Boolean(localStorage.getItem('remember'));
+    if (hasExpired(localStorage.getItem('refresh_last_update'), localStorage.getItem('refresh_token_expires_in'))) {
+        username.value = localStorage.getItem('username') || "";
+        password.value = localStorage.getItem('password') || "";
+        remember.checked = Boolean(localStorage.getItem('remember'));
+    } else {
+        window.location.href = '/account/account.html';
+    }
 }
 
 window.remember = () => {
@@ -35,6 +42,7 @@ window.login = async (button) => {
     });
       
     const tokens = await response.json();
+    localStorage.setItem('client_id', tokens.client_id);
     localStorage.setItem('account_id', tokens.account_id);
     localStorage.setItem('access_token', tokens.access_token);
     localStorage.setItem('refresh_token', tokens.refresh_token);

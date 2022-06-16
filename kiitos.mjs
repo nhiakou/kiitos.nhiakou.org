@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import fetch from 'node-fetch';
 import puppeteer from 'puppeteer';
-import { key, cert, client_id, redirect_uri } from './credentials.mjs';
+import { key, cert, client_id, redirect_uri } from './login/credentials.mjs';
 
 const bot = express();
 bot.use(cors());
@@ -29,7 +29,7 @@ bot.post('/login', async (req, res) => {
     const tokens = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
     await page.close();
     await browser.close();
-    res.json({account_id: await getAccountID(tokens.access_token), ...tokens});
+    res.json({client_id, account_id: await getAccountID(tokens.access_token), ...tokens});
 });
 
 bot.get('/auth', async (req, res) => {
