@@ -33,7 +33,7 @@ window.login = async (button) => {
     button.disabled = true;
     button.textContent = "Please approve on your mobile device";
 
-    const response = await fetch('https://localhost:999/login', {
+    const response = await fetch('https://192.168.1.194:999/login', {
         method: 'POST',
         mode: 'cors',
         headers: {'Content-Type': 'application/json'},
