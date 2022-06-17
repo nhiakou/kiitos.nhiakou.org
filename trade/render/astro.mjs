@@ -3,8 +3,10 @@ import { transitHoroscope } from '/astro/transit.mjs';
 export function createTransitChart(elementID, date) {
     document.getElementById(elementID).replaceChildren();
 
+    const element = document.getElementById(elementID);
+    const width = element.offsetWidth < 500 ? element.offsetWidth : 500;
     const { planets, cusps, As, Ds, Mc, Ic, Sun, Moon, Earth } = transitHoroscope(date);
-    const chart = new astrology.Chart(elementID, 400, 400);
+    const chart = new astrology.Chart(elementID, width, width);
     const radix = chart.radix({ planets, cusps });
     radix.addPointsOfInterest({ As, Mc, Ds, Ic });
     radix.aspects();

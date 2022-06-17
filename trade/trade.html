@@ -11,6 +11,13 @@
     </head>
     <body>
         <header>
+            <section>
+                <h4>TEST MODE</h4>
+                <input id="test-true" name="test" type="radio" value="1" onchange="testMode()" />
+                <label for="test-true">On</label>
+                <input id="test-false" name="test" type="radio" value="0" onchange="testMode()" />
+                <label for="test-false">Off</label>
+            </section>
             <aside>
                 <figure id="horoscope"></figure>
                 <h1 id="synodic-time"></h1>
@@ -64,7 +71,7 @@
                     <h3>Average Cost: <span id="SQ-cost">$0</span></h3>
                     <h3>Quantity: <span id="SQ-quantity">0</span></h3>
                 </article>
-                <section>
+                <section style="display:none">
                     <button id="SQ-buy">Buy Now</button>
                     <button id="SQ-sell">Sell Now</button>
                 </section>

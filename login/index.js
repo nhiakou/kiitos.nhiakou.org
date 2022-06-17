@@ -9,7 +9,7 @@ window.onload = () => {
     if (hasExpired(localStorage.getItem('refresh_last_update'), localStorage.getItem('refresh_token_expires_in'))) {
         username.value = localStorage.getItem('username') || "";
         password.value = localStorage.getItem('password') || "";
-        remember.checked = Boolean(localStorage.getItem('remember'));
+        remember.checked = Boolean(Number(localStorage.getItem('remember')));
     } else {
         window.location.href = '/account/account.html';
     }
