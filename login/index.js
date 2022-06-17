@@ -49,7 +49,7 @@ window.login = async (button) => {
 
 window.copyTokens = async (button) => {
     button.disabled = true;
-    const response = await fetch('http://192.168.1.194:666/');
+    const response = await fetch('https://192.168.1.194:999/');
     setTokens(await response.json());
     window.location.href = '/account/account.html';
 }
