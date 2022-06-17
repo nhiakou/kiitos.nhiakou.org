@@ -6,6 +6,8 @@ const remember = document.getElementById('remember');
 
 // refresh token expires after 7776000 seconds = 90 days
 window.onload = () => {
+    document.getElementById(window.location.hostname === 'kiitos.nhiakou.org' ? 'renew' : 'copy').disabled = true;
+
     if (hasExpired(localStorage.getItem('refresh_last_update'), localStorage.getItem('refresh_token_expires_in'))) {
         username.value = localStorage.getItem('username') || "";
         password.value = localStorage.getItem('password') || "";
@@ -41,7 +43,18 @@ window.login = async (button) => {
         })
     });
       
-    const tokens = await response.json();
+    setTokens(await response.json())
+    window.location.href = '/account/account.html';
+}
+
+window.copyTokens = async (button) => {
+    button.disabled = true;
+    const response = await fetch('http://192.168.1.194:666/');
+    setTokens(await response.json());
+    window.location.href = '/account/account.html';
+}
+
+function setTokens(tokens) {
     localStorage.setItem('client_id', tokens.client_id);
     localStorage.setItem('account_id', tokens.account_id);
     localStorage.setItem('access_token', tokens.access_token);
@@ -51,8 +64,6 @@ window.login = async (button) => {
     localStorage.setItem('token_type', tokens.token_type);
     localStorage.setItem('access_last_update', new Date().toString());
     localStorage.setItem('refresh_last_update', new Date().toString());
-
-    window.location.href = '/account/account.html';
 }
 
 window.dataLayer = window.dataLayer || [];

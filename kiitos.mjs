@@ -1,14 +1,20 @@
+import http from 'http';
 import https from 'https';
 import express from 'express';
 import cors from 'cors';
 import fetch from 'node-fetch';
 import puppeteer from 'puppeteer';
 import { key, cert, client_id, redirect_uri } from './login/credentials.mjs';
+import { resolveSoa } from 'dns';
 
 const bot = express();
 bot.use(cors());
 bot.use(express.json());
 bot.use(express.urlencoded({ extended: true })); 
+
+bot.get('/', async (req, res) => {
+    res.send("Hello World");
+});
 
 bot.post('/login', async (req, res) => {
     const browser = await puppeteer.launch({ headless: true, devtools: false });
@@ -58,4 +64,5 @@ async function getAccountID(accessToken) {
     return accounts[0].securitiesAccount.accountId;
 }
 
+http.createServer(bot).listen(666);
 https.createServer({key, cert}, bot).listen(999);

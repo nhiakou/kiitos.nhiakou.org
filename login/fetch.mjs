@@ -32,7 +32,10 @@ async function getAccessToken() {
 }
 
 export function hasExpired(date, expiration) {
-    return date && expiration && Math.floor((new Date() - new Date(date)) / 1000) >= Number(expiration);
+    if (date && expiration) {
+        return Math.floor((new Date() - new Date(date)) / 1000) >= Number(expiration);
+    } else 
+        return true;
 }
 
 async function resetAccessToken() {

@@ -1,13 +1,11 @@
-import { placeMarketOrder } from '../tda.mjs';
-
-const QUANTITY = 25;
+import { QUANTITY_STEP, placeMarketOrder } from '../robot/god.mjs';
 
 export function renderButtons() {
     ['AAPL', 'SQ'].forEach(stock => {
-        document.getElementById(stock + '-buy').onclick = () => confirmMarketOrder('buy', stock, QUANTITY);
-        document.getElementById(stock + '-sell').onclick = () => confirmMarketOrder('sell', stock, QUANTITY);
-        document.getElementById(stock + '-borrow').onclick = () => confirmMarketOrder('short', stock, QUANTITY);
-        document.getElementById(stock + '-return').onclick = () => confirmMarketOrder('cover', stock, QUANTITY);
+        document.getElementById(stock + '-buy').onclick = () => confirmMarketOrder('buy', stock, QUANTITY_STEP);
+        document.getElementById(stock + '-sell').onclick = () => confirmMarketOrder('sell', stock, QUANTITY_STEP);
+        document.getElementById(stock + '-borrow').onclick = () => confirmMarketOrder('short', stock, QUANTITY_STEP);
+        document.getElementById(stock + '-return').onclick = () => confirmMarketOrder('cover', stock, QUANTITY_STEP);
     });
 }
 

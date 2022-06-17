@@ -1,6 +1,8 @@
 import { formatToDollar } from "/utils.mjs";
 
 export function renderAccount(account) {
+    document.getElementById('trader').textContent = account.securitiesAccount.isDayTrader ? "Yes": "No";
+    document.getElementById('trips').textContent = account.securitiesAccount.roundTrips;
     formatToDollar(document.getElementById('available-cash'), account.securitiesAccount.currentBalances.cashBalance);
     formatToDollar(document.getElementById('available-margin'), account.securitiesAccount.projectedBalances.stockBuyingPower);
     formatToDollar(document.getElementById('margin-balance'), account.securitiesAccount.currentBalances.marginBalance);

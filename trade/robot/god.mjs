@@ -1,10 +1,11 @@
-import { getTDA } from '../tda.mjs';
+import { getTDA, openLongPosition, openShortPosition, closeLongPosition, closeShortPosition } from '../tda.mjs';
 import { renderAstro } from '../render/astro.mjs';
 import { renderMarket } from '../render/market.mjs';
 import { renderPositions } from '../render/positions.mjs';
 import { renderButtons } from '../render/buttons.mjs';
 
-const MIN_PROFIT = 100;
+const QUANTITY_STEP = 5;
+const MIN_PROFIT = 50;
 
 export async function analyzeStocks() {
     const data = await renderTradePage();
@@ -46,14 +47,27 @@ REMEMBER:
 4. I can update formulas but at night (good sidereal)
 
 TODO:
-1. run kiitos with test first; create delete orders 
-2. create 2 formulas for bull and bear market
+1. run kiitos with test first; create delete orders
 3. add govt econ data; add news data from tda
 - get data from twitter?
 - get coinbase data over weekend for monday trading of SQ ?
-4. create scheduler to trade based on time?
-- get round trips, get is day trader
+4. create scheduler to trade based on time? create form to buy now
 - use panhia laptop to turn on all day for trading // also for hb blockchain too
 - change localhost to IP and test on iphone
 
 */
+
+export async function placeMarketOrder(order, symbol, quantity) {
+    switch (order) {
+        case 'buy':
+            return {status: await openLongPosition(symbol, quantity)};
+        case 'sell':
+            return {status: await closeLongPosition(symbol, quantity)};
+        case 'short':
+            return {status: await openShortPosition(symbol, quantity)};
+        case 'cover':
+            return {status: await closeShortPosition(symbol, quantity)};
+    }        
+}
+
+export { QUANTITY_STEP };

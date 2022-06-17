@@ -16,12 +16,19 @@ window.onload = async () => {
     if (hasExpired(localStorage.getItem('refresh_last_update'), localStorage.getItem('refresh_token_expires_in'))) {
         window.location.href = '/index.html';
     } else {
-        document.getElementById(Number(localStorage.getItem('test')) ? 'test-true' : 'test-false').checked = true;
+        localStorage.setItem('market', localStorage.getItem('market') || 0);
+        document.getElementById(Number(localStorage.getItem('market')) ? 'market-bull' : 'market-bear').checked = true;
+        
         await renderTradePage();
         console.log(await getOrders());
     }
 }
 
-window.testMode = () => {
-    localStorage.setItem('test', document.querySelector('input[name="test"]:checked').value);
+window.marketState = () => {
+    localStorage.setItem('market', document.querySelector('input[name="market"]:checked').value);
+}
+
+window.logout = () => {
+    localStorage.clear();
+    window.location.href = "/index.html";
 }

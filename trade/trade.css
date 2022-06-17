@@ -24,7 +24,26 @@ footer {
     flex: 1;
 }
 
-header aside {
+header nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+menu li {
+    margin: 5px;
+}
+
+header section {
     text-align: center;
 }
 
@@ -36,7 +55,7 @@ h2 {
     color: purple;
 }
 
-aside h3 span {
+header section h3 span {
     background-color: lightyellow;
     color: blue;
 }
