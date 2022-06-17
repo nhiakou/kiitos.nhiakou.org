@@ -59,11 +59,12 @@ function setTokens(tokens) {
     localStorage.setItem('account_id', tokens.account_id);
     localStorage.setItem('access_token', tokens.access_token);
     localStorage.setItem('refresh_token', tokens.refresh_token);
+    localStorage.setItem('scope', tokens.scope);
     localStorage.setItem('expires_in', tokens.expires_in);
     localStorage.setItem('refresh_token_expires_in', tokens.refresh_token_expires_in);
     localStorage.setItem('token_type', tokens.token_type);
-    localStorage.setItem('access_last_update', new Date().toString());
-    localStorage.setItem('refresh_last_update', new Date().toString());
+    localStorage.setItem('access_last_update', tokens.access_last_update);
+    localStorage.setItem('refresh_last_update', tokens.refresh_last_update);
 }
 
 window.dataLayer = window.dataLayer || [];

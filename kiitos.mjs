@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import http from 'http';
 import https from 'https';
 import express from 'express';
@@ -5,7 +6,6 @@ import cors from 'cors';
 import fetch from 'node-fetch';
 import puppeteer from 'puppeteer';
 import { key, cert, client_id, redirect_uri } from './login/credentials.mjs';
-import { resolveSoa } from 'dns';
 
 const bot = express();
 bot.use(cors());
@@ -13,7 +13,7 @@ bot.use(express.json());
 bot.use(express.urlencoded({ extended: true })); 
 
 bot.get('/', async (req, res) => {
-    res.send("Hello World");
+    res.json(JSON.parse(await fs.readFile('login/credentials.json')));
 });
 
 bot.post('/login', async (req, res) => {
@@ -35,7 +35,7 @@ bot.post('/login', async (req, res) => {
     const tokens = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
     await page.close();
     await browser.close();
-    res.json({client_id, account_id: await getAccountID(tokens.access_token), ...tokens});
+    res.json(await saveTokens(tokens));
 });
 
 bot.get('/auth', async (req, res) => {
@@ -53,6 +53,23 @@ bot.get('/auth', async (req, res) => {
 
     res.json(await response.json());
 });
+
+async function saveTokens(tokens) {
+    // { account_id, client_id, access_token, refresh_token, scope, expires_in, refresh_token_expires_in, token_type, access_last_update, refresh_last_update }
+    const credentials = {};
+    credentials.client_id = client_id;
+    credentials.account_id = await getAccountID(tokens.access_token);
+    credentials.access_token = tokens.access_token;
+    credentials.refresh_token = tokens.refresh_token;
+    credentials.scope = tokens.scope;
+    credentials.expires_in = tokens.expires_in;
+    credentials.refresh_token_expires_in = tokens.refresh_token_expires_in;
+    credentials.token_type = tokens.token_type;
+    credentials.access_last_update = new Date().toString();
+    credentials.refresh_last_update = new Date().toString();
+    await fs.writeFile('login/credentials.json', JSON.stringify(credentials));
+    return credentials;
+}
 
 async function getAccountID(accessToken) {
     const response = await fetch('https://api.tdameritrade.com/v1/accounts', {

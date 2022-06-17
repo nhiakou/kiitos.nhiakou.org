@@ -52,8 +52,8 @@ TODO:
 - get data from twitter?
 - get coinbase data over weekend for monday trading of SQ ?
 4. create scheduler to trade based on time? create form to buy now
-- use panhia laptop to turn on all day for trading // also for hb blockchain too
-- change localhost to IP and test on iphone
+- use panhia laptop for all day hb blockchain
+- use chromebook for all day trading
 
 */
 
