@@ -54,6 +54,8 @@ TODO:
 4. create scheduler to trade based on time? create form to buy now
 - use panhia laptop for all day hb blockchain
 - use chromebook for all day trading
+- fix position shorts
+- fix summary shorts too
 
 */
 

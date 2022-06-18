@@ -76,3 +76,7 @@ legend {
 .stats {
     background-color: lightpink;
 }
+
+select {
+    margin: 10px;
+}

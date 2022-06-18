@@ -18,14 +18,23 @@ window.onload = async () => {
     } else {
         localStorage.setItem('market', localStorage.getItem('market') || 0);
         document.getElementById(Number(localStorage.getItem('market')) ? 'market-bull' : 'market-bear').checked = true;
-        
+        marketState();
+
         await renderTradePage();
         console.log(await getOrders());
     }
 }
 
 window.marketState = () => {
-    localStorage.setItem('market', document.querySelector('input[name="market"]:checked').value);
+    const state = document.querySelector('input[name="market"]:checked');
+    localStorage.setItem('market', state.value);
+    document.querySelectorAll('.market').forEach(button => button.style.display = 'none');
+    document.querySelectorAll(Number(state.value) ? '.bull' : '.bear').forEach(button => button.style.display = 'block');
+}
+
+window.showMarginPosition = select => {
+    document.querySelectorAll('.margin').forEach(position => position.style.display = 'none');
+    document.getElementById(select.value).style.display = 'block';
 }
 
 window.logout = () => {

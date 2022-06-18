@@ -1,7 +1,8 @@
 import { formatToDollar, formatToPercent, formatToDollars, formatToQuantity } from "/utils.mjs";
 
 export function renderPositions(positions) {
-    positions.securitiesAccount.positions.filter(position => position.instrument.symbol === 'AAPL' || position.instrument.symbol === 'SQ').forEach(position => {
+    console.log(positions.securitiesAccount.positions);
+    positions.securitiesAccount.positions.forEach(position => {
         document.getElementById(position.instrument.symbol + '-cost').textContent = formatToDollars(position.averagePrice);
         document.getElementById(position.instrument.symbol + '-quantity').textContent = formatToQuantity(position.settledLongQuantity);
         // document.getElementById(position.instrument.symbol + '-dollar-profit').textContent = position.currentDayProfitLoss;

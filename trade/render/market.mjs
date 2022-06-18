@@ -1,7 +1,7 @@
 import { formatToDollar, formatToPercent, formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 
 export function renderMarket(stocks) {
-    ['BRK.B', 'AAPL', 'SQ'].forEach(stock => {
+    ['BRK.B', 'AAPL', 'SQ', 'ABNB'].forEach(stock => {
         document.getElementById(stock + '-bid-price').textContent = formatToDollars(stocks[stock].bidPrice);
         document.getElementById(stock + '-bid-size').textContent = formatToQuantity(stocks[stock].bidSize);
         document.getElementById(stock + '-ask-price').textContent = formatToDollars(stocks[stock].askPrice);

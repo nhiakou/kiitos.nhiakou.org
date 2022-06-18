@@ -63,10 +63,14 @@
                 </article>
             </fieldset>
         </header>
-        <br />
         <main>
-            <fieldset>
-                <legend>Long Cash Position: AAPL</legend>
+            <select onchange="showCashPositions(this)">
+                <optgroup label="Cash Positions">
+                    <option value="aapl">AAPL</option>
+                </optgroup>
+            </select>
+            <fieldset id="aapl" class="cash">
+                <legend>Cash Position: AAPL</legend>
                 <article>
                     <h2>$ Profit: <span id="AAPL-dollar-profit">$0</span></h2>
                     <h2>% Profit: <span id="AAPL-percent-profit">0%</span></h2>
@@ -108,10 +112,15 @@
                 </article>
             </fieldset>
         </main>
-        <br />
         <footer>
-            <fieldset>
-                <legend>Short Margin Position: SQ</legend>
+            <select onchange="showMarginPosition(this)">
+                <optgroup label="Margin Positions">
+                    <option value="sq">SQ</option>
+                    <option value="abnb">ABNB</option>
+                </optgroup>
+            </select>
+            <fieldset id="sq" class="margin">
+                <legend>Margin Position: SQ</legend>
                 <article>
                     <h2>$ Profit: <span id="SQ-dollar-profit">$0</span></h2>
                     <h2>% Profit: <span id="SQ-percent-profit">0%</span></h2>
@@ -121,11 +130,11 @@
                     <h3>Average Cost: <span id="SQ-cost">$0</span></h3>
                     <h3>Quantity: <span id="SQ-quantity">0</span></h3>
                 </article>
-                <section style="display:none">
+                <section class="market bull">
                     <button id="SQ-buy">Buy Now</button>
                     <button id="SQ-sell">Sell Now</button>
                 </section>
-                <section>
+                <section class="market bear">
                     <button id="SQ-borrow">Borrow Now</button>
                     <button id="SQ-return">Return Now</button>
                 </section>
@@ -150,6 +159,49 @@
                     <h3>Volatility: <span id="SQ-volatility"></span></h3>
                     <h3>52-Week High: <span id="SQ-52wk-high"></span></h3>
                     <h3>52-Week Low: <span id="SQ-52wk-low"></span></h3>
+                </article>
+            </fieldset>
+            <br />
+            <fieldset id="abnb" class="margin" style="display:none">
+                <legend>Margin Position: ABNB</legend>
+                <article>
+                    <h2>$ Profit: <span id="ABNB-dollar-profit">$0</span></h2>
+                    <h2>% Profit: <span id="ABNB-percent-profit">0%</span></h2>
+                </article>
+                <article>
+                    <h3>Current Price: <span id="ABNB-price"></span></h3>
+                    <h3>Average Cost: <span id="ABNB-cost">$0</span></h3>
+                    <h3>Quantity: <span id="ABNB-quantity">0</span></h3>
+                </article>
+                <section class="market bull">
+                    <button id="ABNB-buy">Buy Now</button>
+                    <button id="ABNB-sell">Sell Now</button>
+                </section>
+                <section class="market bear">
+                    <button id="ABNB-borrow">Borrow Now</button>
+                    <button id="ABNB-return">Return Now</button>
+                </section>
+                <article class="price">
+                    <h3>$ Price Change: <span id="ABNB-dollar-price-change"></span></h3>
+                    <h3>% Price Change: <span id="ABNB-percent-price-change"></span></h3>
+                    <h3>Open Price: <span id="ABNB-open-price"></span></h3>
+                    <h3>Close Price: <span id="ABNB-close-price"></span></h3>
+                    <!--<h3>Net Change: <span id="ABNB-net-change"></span></h3>-->
+                    <h3>Total Volume: <span id="ABNB-total-volume"></span></h3>
+                </article>
+                <article class="bid">
+                    <h3>Bid Price: <span id="ABNB-bid-price"></span></h3>
+                    <h3>Bid Size: <span id="ABNB-bid-size"></span></h3>
+                    <h3>Ask Price: <span id="ABNB-ask-price"></span></h3>
+                    <h3>Ask Size: <span id="ABNB-ask-size"></span></h3>
+                    <h3>High Price: <span id="ABNB-high-price"></span></h3>
+                    <h3>Low Price: <span id="ABNB-low-price"></span></h3>
+                </article>
+                <article class="stats">
+                    <h3>P/E Ratio: <span id="ABNB-pe-ratio"></span></h3>
+                    <h3>Volatility: <span id="ABNB-volatility"></span></h3>
+                    <h3>52-Week High: <span id="ABNB-52wk-high"></span></h3>
+                    <h3>52-Week Low: <span id="ABNB-52wk-low"></span></h3>
                 </article>
             </fieldset>
         </footer>
