@@ -1,15 +1,18 @@
 import { getHoroscope } from './horoscope.mjs';
 const { Origin, Horoscope } = Astro;
 
-export function natalHoroscope() {
+const birthDate = new Date(1985, 0, 7, 15, 0);
+const birthLocation = [10.6058073, 104.1767753];
+
+export function natalHoroscope(date=birthDate, location=birthLocation) {
   const origin = new Origin({
-      year: 1985,
-      month: 0,
-      date: 7,
-      hour: 15,
-      minute: 0,
-      latitude: 10.6058073,
-      longitude: 104.1767753,
+      year: date.getFullYear(),
+      month: date.getMonth(),
+      date: date.getDate(),
+      hour: date.getHours(),
+      minute: date.getMinutes(),
+      latitude: location[0],
+      longitude: location[1]
   });
 
   const horoscope =  new Horoscope({

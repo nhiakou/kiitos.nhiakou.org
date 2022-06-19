@@ -32,6 +32,15 @@
                 <h3>Earth: <span id="earth-as"></span></h3>
                 <h3>Earth: <span id="earth-mc"></span></h3>
             </section>
+            <select onchange="showMarket(this)">
+                <optgroup label="Market Data">
+                    <option value="twitter">Trending</option>
+                    <option value="news">News</option>
+                    <option value="econ">Econ</option>
+                    <option value="coinbase">Crypto</option>
+                    <option value="berk" selected>BRK.B</option>
+                </optgroup>
+            </select>
             <fieldset>
                 <legend>Market: BRK.B</legend>
                 <article class="bid">
@@ -45,6 +54,7 @@
                 <section>
                     <button id="start" onclick="startAnalyzing()">Start</button>
                     <button id="stop" onclick="stopAnalyzing()">Stop</button>
+                    <button id="test" onclick="window.location.href='/trade/robot/test.html'">Test</button>
                 </section>
                 <article class="price">
                     <h3>Current Price: <span id="BRK.B-price"></span></h3>
@@ -64,7 +74,7 @@
             </fieldset>
         </header>
         <main>
-            <select onchange="showCashPositions(this)">
+            <select onchange="showCashPosition(this)">
                 <optgroup label="Cash Positions">
                     <option value="aapl">AAPL</option>
                 </optgroup>

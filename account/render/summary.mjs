@@ -19,6 +19,7 @@ function createSummaryDataStructure(history) {
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 export function renderSummary(history) {
+  //console.log(history)
   const summary = createSummaryDataStructure(history);
   const calendar = document.getElementById('calendar');
 
@@ -83,7 +84,7 @@ export function renderSummary(history) {
           const td1 = document.createElement('td');
           td1.textContent = date.toLocaleTimeString();
           const td2 = document.createElement('td');
-          td2.textContent = transaction.transactionItem.instruction;
+          td2.textContent = transaction.description; //transactionItem.instruction;
           const td3 = document.createElement('td');
           td3.textContent = transaction.transactionItem.instrument.symbol;
           const td4 = document.createElement('td');

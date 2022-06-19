@@ -1,3 +1,6 @@
+const IP = "192.168.1.194:999";
+export { IP };
+
 export async function postData(url = '', data = {}) {
     const response = await fetch(url, {
         method: 'POST', 
@@ -8,7 +11,7 @@ export async function postData(url = '', data = {}) {
         body: JSON.stringify(data)
     });
     
-    return response.json();
+    return response.text();
 }
 
 export async function getData(url='', data = {}) {
@@ -20,6 +23,17 @@ export async function getData(url='', data = {}) {
     });
     
     return response.json();
+}
+
+export async function deleteOrder(orderID) {
+    const response = await fetch(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/savedorders/${orderID}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + await getAccessToken()
+        }
+    });
+    
+    return response.text();
 }
 
 // access token expires after 1800 seconds = 30 mins

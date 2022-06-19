@@ -47,15 +47,9 @@ REMEMBER:
 4. I can update formulas but at night (good sidereal)
 
 TODO:
-1. run kiitos with test first; create delete orders
-3. add govt econ data; add news data from tda
-- get data from twitter?
 - get coinbase data over weekend for monday trading of SQ ?
-4. create scheduler to trade based on time? create form to buy now
-- use panhia laptop for all day hb blockchain
-- use chromebook for all day trading
-- fix position shorts
-- fix summary shorts too
+1. first god formula
+- show that's it's running
 
 */
 

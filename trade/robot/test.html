@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="module">
+            import { getData, deleteOrder } from "/login/fetch.mjs";
+
+            let orders = null;
+
+            window.onload = async () => {
+                orders = await getData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/savedorders`);
+                const ol = document.querySelector('ol');
+
+                orders.forEach(order => {
+                    const li = document.createElement('li');
+                    const ul = document.createElement('ul');
+                    ol.append(li);
+                    li.append(ul);
+                    
+                    for (const prop in order) {
+                        const li = document.createElement('li');
+                        const b = document.createElement('b');
+                        const span = document.createElement('span');
+                        b.textContent = prop + ": ";
+
+                        if (prop === 'orderLegCollection') {
+                            span.textContent = JSON.stringify(order.orderLegCollection);
+                        } else if (prop === 'savedTime') {
+                            span.textContent = new Date(order.savedTime).toLocaleString();
+                        } else {
+                            span.textContent = order[prop];
+                        }
+
+                        li.append(b, span);
+                        ul.append(li);
+                    }
+                })
+            }
+
+            window.deleteAll = async button => {
+                button.disabled = true;
+                await Promise.allSettled(orders.map(order => deleteOrder(order.savedOrderId)));
+                window.location.reload();
+            }
+        </script>
+        <style>
+            body {
+                width: 100vw;
+                height: 100vh;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <a href="/account/account.html">Account</a>
+            <a href="/trade/trade.html">Trade</a>
+        </header>
+        <main>
+            <ol></ol>
+        </main>
+        <footer>
+            <button onclick="deleteAll(this)">Delete All</button>
+        </footer>
+    </body>
+</html>

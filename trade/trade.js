@@ -1,5 +1,4 @@
 import { hasExpired } from "/login/fetch.mjs";
-import { getOrders } from './tda.mjs';
 import { analyzeStocks, renderTradePage } from './robot/god.mjs';
 
 let intervalID = null;
@@ -18,10 +17,10 @@ window.onload = async () => {
     } else {
         localStorage.setItem('market', localStorage.getItem('market') || 0);
         document.getElementById(Number(localStorage.getItem('market')) ? 'market-bull' : 'market-bear').checked = true;
-        marketState();
+        document.getElementById('test').disabled = !Boolean(Number(localStorage.getItem('test')));
 
+        marketState();
         await renderTradePage();
-        console.log(await getOrders());
     }
 }
 
