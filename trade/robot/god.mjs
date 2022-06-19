@@ -1,8 +1,7 @@
 import { getTDA, openLongPosition, openShortPosition, closeLongPosition, closeShortPosition } from '../tda.mjs';
 import { renderAstro } from '../render/astro.mjs';
-import { renderMarket } from '../render/market.mjs';
-import { renderPositions } from '../render/positions.mjs';
-import { renderButtons } from '../render/buttons.mjs';
+import { renderMarket, renderMarkets } from '../render/market.mjs';
+import { renderPositions, renderButtons } from '../render/positions.mjs';
 
 const QUANTITY_STEP = 5;
 const MIN_PROFIT = 50;
@@ -16,7 +15,8 @@ export async function renderTradePage() {
     const data = await getTDA();
     renderAstro(data.stocks['BRK.A']);
 
-    renderMarket(data.stocks);
+    renderMarket();
+    renderMarkets(data.stocks);
     renderPositions(data.positions);
     renderButtons();
 
@@ -49,6 +49,7 @@ REMEMBER:
 TODO:
 - get coinbase data over weekend for monday trading of SQ ?
 first god formula
+- create form
 - get market hours
 - show that's it's running: console log
 later: sound effects alarms

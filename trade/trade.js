@@ -17,7 +17,7 @@ window.onload = async () => {
     } else {
         localStorage.setItem('market', localStorage.getItem('market') || 0);
         document.getElementById(Number(localStorage.getItem('market')) ? 'market-bull' : 'market-bear').checked = true;
-        document.getElementById('test').disabled = !Boolean(Number(localStorage.getItem('test')));
+        document.getElementById('admin').style.textDecorationLine = Number(localStorage.getItem('test')) ? 'none' : 'line-through';
 
         marketState();
         await renderTradePage();

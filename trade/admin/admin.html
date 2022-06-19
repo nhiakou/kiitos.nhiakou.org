@@ -1,12 +1,12 @@
 <html>
     <head>
+        <title>Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="module">
             import { getData, deleteOrder } from "/login/fetch.mjs";
-            import { sendMail } from "./mail.mjs";
+            import { sendMail } from "./admin.mjs";
 
             let orders = null;
-            const mail = document.getElementById('mail');
 
             window.onload = async () => {
                 orders = await getData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/savedorders`);
