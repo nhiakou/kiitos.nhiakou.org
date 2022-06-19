@@ -2,6 +2,7 @@ import { IP, hasExpired } from "./fetch.mjs";
 
 const username = document.getElementById('username');
 const password = document.getElementById('password');
+const mail = document.getElementById('mail');
 const remember = document.getElementById('remember');
 
 // refresh token expires after 7776000 seconds = 90 days
@@ -11,6 +12,7 @@ window.onload = () => {
     if (hasExpired(localStorage.getItem('refresh_last_update'), localStorage.getItem('refresh_token_expires_in'))) {
         username.value = localStorage.getItem('username') || "";
         password.value = localStorage.getItem('password') || "";
+        mail.value = localStorage.getItem('mailgun_key') || "";
         remember.checked = Boolean(Number(localStorage.getItem('remember')));
     } else {
         window.location.href = '/account/account.html';
@@ -40,6 +42,7 @@ window.login = async (button) => {
         body: JSON.stringify({
             username: username.value, 
             password: password.value, 
+            mail: mail.value
         })
     });
       
@@ -55,6 +58,7 @@ window.copyTokens = async (button) => {
 }
 
 function setTokens(tokens) {
+    localStorage.setItem('mailgun_key', tokens.mailgun_key);
     localStorage.setItem('client_id', tokens.client_id);
     localStorage.setItem('account_id', tokens.account_id);
     localStorage.setItem('access_token', tokens.access_token);

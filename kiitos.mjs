@@ -34,6 +34,7 @@ bot.post('/login', async (req, res) => {
     const tokens = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
     await page.close();
     await browser.close();
+    tokens.mailgun_key = req.body.mail;
     res.json(await saveTokens(tokens));
 });
 
@@ -54,20 +55,13 @@ bot.get('/auth', async (req, res) => {
 });
 
 async function saveTokens(tokens) {
-    // { account_id, client_id, access_token, refresh_token, scope, expires_in, refresh_token_expires_in, token_type, access_last_update, refresh_last_update }
-    const credentials = {};
-    credentials.client_id = client_id;
-    credentials.account_id = await getAccountID(tokens.access_token);
-    credentials.access_token = tokens.access_token;
-    credentials.refresh_token = tokens.refresh_token;
-    credentials.scope = tokens.scope;
-    credentials.expires_in = tokens.expires_in;
-    credentials.refresh_token_expires_in = tokens.refresh_token_expires_in;
-    credentials.token_type = tokens.token_type;
-    credentials.access_last_update = new Date().toString();
-    credentials.refresh_last_update = new Date().toString();
-    await fs.writeFile('login/credentials.json', JSON.stringify(credentials));
-    return credentials;
+    // { access_token, refresh_token, scope, expires_in, refresh_token_expires_in, token_type }
+    tokens.client_id = client_id;
+    tokens.account_id = await getAccountID(tokens.access_token);
+    tokens.access_last_update = new Date().toString();
+    tokens.refresh_last_update = new Date().toString();
+    await fs.writeFile('login/credentials.json', JSON.stringify(tokens));
+    return tokens;
 }
 
 async function getAccountID(accessToken) {

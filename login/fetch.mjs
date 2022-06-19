@@ -1,4 +1,4 @@
-const IP = "192.168.1.194:999";
+const IP = "https://192.168.1.194:999";
 export { IP };
 
 export async function postData(url = '', data = {}) {
@@ -57,9 +57,9 @@ async function resetAccessToken() {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: new URLSearchParams({
-            'grant_type': 'refresh_token',
-            'refresh_token': localStorage.getItem('refresh_token'),
-            'client_id': localStorage.getItem('client_id')
+            grant_type: 'refresh_token',
+            refresh_token: localStorage.getItem('refresh_token'),
+            client_id: localStorage.getItem('client_id')
         })
     });
 

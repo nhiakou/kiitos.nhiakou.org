@@ -48,8 +48,11 @@ REMEMBER:
 
 TODO:
 - get coinbase data over weekend for monday trading of SQ ?
-1. first god formula
-- show that's it's running
+first god formula
+- get market hours
+- show that's it's running: console log
+later: sound effects alarms
+- when begin, start, successful trade
 
 */
 

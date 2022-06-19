@@ -3,8 +3,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="module">
             import { getData, deleteOrder } from "/login/fetch.mjs";
+            import { sendMail } from "./mail.mjs";
 
             let orders = null;
+            const mail = document.getElementById('mail');
 
             window.onload = async () => {
                 orders = await getData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/savedorders`);
@@ -41,6 +43,8 @@
                 await Promise.allSettled(orders.map(order => deleteOrder(order.savedOrderId)));
                 window.location.reload();
             }
+
+            window.sendMail = async () => console.log(await sendMail("Hello World!"));
         </script>
         <style>
             body {
@@ -58,6 +62,7 @@
             <ol></ol>
         </main>
         <footer>
+            <button onclick="sendMail()">Send Email</button>
             <button onclick="deleteAll(this)">Delete All</button>
         </footer>
     </body>
