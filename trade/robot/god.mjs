@@ -2,6 +2,8 @@ import { getTDA, openLongPosition, openShortPosition, closeLongPosition, closeSh
 import { renderAstro } from '../render/astro.mjs';
 import { renderMarket, renderMarkets } from '../render/market.mjs';
 import { renderPositions, renderButtons } from '../render/positions.mjs';
+import { formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
+import { sendMail } from '../admin/admin.mjs';
 
 const QUANTITY_STEP = 5;
 const MIN_PROFIT = 50;
@@ -9,13 +11,37 @@ const MIN_PROFIT = 50;
 export async function analyzeStocks() {
     const data = await renderTradePage();
     console.log(data);
+    let message = "";
+
+    data.positions.securitiesAccount.positions.forEach(position => {
+        const currentPriceString = document.getElementById(position.instrument.symbol + '-price').textContent;
+        const currentPriceFloat = parseFloat(currentPriceString.replace('$', ''));
+        const quantity = -position.shortQuantity || position.longQuantity;
+        const change = quantity > 0 ? currentPriceFloat - position.averagePrice : position.averagePrice - currentPriceFloat;
+        const profit = change >= 0;
+
+        message += `<u>${position.instrument.symbol}</u> x ${formatToQuantity(quantity)}: <b style="color:${profit ? 'green' : 'red'}">${formatToDollars(change)}</b>
+        <br><br>
+        <b>$ Profit:</b> <span style="color:${profit ? 'green' : 'red'}">${formatToDollars((currentPriceFloat - position.averagePrice) * quantity)}</span>
+        <br>
+        <b>% Profit:</b> <span style="color:${profit ? 'green' : 'red'}">${formatToPercents((currentPriceFloat / position.averagePrice * 100 - 100)*Math.sign(quantity))}</span>
+        <br><br>
+        Current: <span style="color:${profit ? 'green' : 'red'}">${currentPriceString}</span>
+        <br>
+        Average: ${formatToDollars(position.averagePrice)}
+        <br><br>
+        `;
+    });
+
+    // todo: get market hours here
+    sendMail(message);
 }
 
 export async function renderTradePage() {
     const data = await getTDA();
     renderAstro(data.stocks['BRK.A']);
 
-    renderMarket();
+    renderMarket(data.market);
     renderMarkets(data.stocks);
     renderPositions(data.positions);
     renderButtons();
@@ -48,12 +74,8 @@ REMEMBER:
 
 TODO:
 - get coinbase data over weekend for monday trading of SQ ?
-first god formula
 - create form
-- get market hours
-- show that's it's running: console log
-later: sound effects alarms
-- when begin, start, successful trade
+- later: sound effects alarms // when begin, start, successful trade
 
 */
 

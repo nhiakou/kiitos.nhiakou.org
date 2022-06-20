@@ -1,10 +1,10 @@
 import { getData, postData } from "/login/fetch.mjs";
 
 export async function getTDA() {
-    // todo get market hours here
+    const market = await getData('https://api.tdameritrade.com/v1/marketdata/EQUITY/hours', { date: new Date().toISOString() });
     const positions = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: 'positions' });
     const stocks = await getData('https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: 'BRK.A,BRK.B,AAPL,SQ,ABNB' });
-    return { positions, stocks };
+    return { market, positions, stocks };
 }
 
 // buy long
