@@ -7,12 +7,14 @@ import { sendMail } from '../admin/admin.mjs';
 
 const QUANTITY_STEP = 5;
 const MIN_PROFIT = 50;
+const STOP_LOSS = 100;
+const SUPPLY_DEMAND = 0.50; // ask vs bid size
 
 export async function analyzeStocks() {
     const data = await renderTradePage();
     console.log(data);
-    let message = "";
 
+    // todo: add bid size // add stocks to watch too!
     data.positions.securitiesAccount.positions.forEach(position => {
         const currentPriceString = document.getElementById(position.instrument.symbol + '-price').textContent;
         const currentPriceFloat = parseFloat(currentPriceString.replace('$', ''));
@@ -20,21 +22,37 @@ export async function analyzeStocks() {
         const change = quantity > 0 ? currentPriceFloat - position.averagePrice : position.averagePrice - currentPriceFloat;
         const profit = change >= 0;
 
-        message += `<u>${position.instrument.symbol}</u> x ${formatToQuantity(quantity)}: <b style="color:${profit ? 'green' : 'red'}">${formatToDollars(change)}</b>
+        const formattedChange = formatToDollars(change);
+        const formattedQuantity = formatToQuantity(quantity);
+        const formattedDollarProfit = formatToDollars((currentPriceFloat - position.averagePrice) * quantity);
+        const formattedPercentProfit = formatToPercents((currentPriceFloat / position.averagePrice * 100 - 100)*Math.sign(quantity));
+
+        const subject = `${position.instrument.symbol}: ${formattedChange} x ${formattedQuantity} = ${formattedDollarProfit}`;
+        const message = `<u>${position.instrument.symbol}</u> x ${formattedQuantity}: <b style="color:${profit ? 'green' : 'red'}">${formattedChange}</b>
         <br><br>
-        <b>$ Profit:</b> <span style="color:${profit ? 'green' : 'red'}">${formatToDollars((currentPriceFloat - position.averagePrice) * quantity)}</span>
+        <b>$ Profit:</b> <span style="color:${profit ? 'green' : 'red'}">${formattedDollarProfit}</span>
         <br>
-        <b>% Profit:</b> <span style="color:${profit ? 'green' : 'red'}">${formatToPercents((currentPriceFloat / position.averagePrice * 100 - 100)*Math.sign(quantity))}</span>
+        <b>% Profit:</b> <span style="color:${profit ? 'green' : 'red'}">${formattedPercentProfit}</span>
         <br><br>
         Current: <span style="color:${profit ? 'green' : 'red'}">${currentPriceString}</span>
         <br>
         Average: ${formatToDollars(position.averagePrice)}
         <br><br>
         `;
-    });
 
-    // todo: get market hours here
-    sendMail(message);
+        if (isMarketOpen(data.market)) sendMail(subject, message);
+    });
+}
+
+function isMarketOpen(market) {
+    if (market.equity.equity.isOpen) {
+        const now = new Date();
+        const start = new Date(market.equity.equity.sessionHours.regularMarket[0].start);
+        const end = new Date(market.equity.equity.sessionHours.regularMarket[0].end);
+        return start <= now && now <= end;
+    } else {
+        return false;
+    }
 }
 
 export async function renderTradePage() {
@@ -74,7 +92,6 @@ REMEMBER:
 
 TODO:
 - get coinbase data over weekend for monday trading of SQ ?
-- create form
 - later: sound effects alarms // when begin, start, successful trade
 
 */
