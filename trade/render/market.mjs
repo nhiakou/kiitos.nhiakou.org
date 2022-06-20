@@ -1,14 +1,14 @@
 import { formatToDollar, formatToPercent, formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 
 export function renderMarket(market) {
-    //console.log(market.equity.equity)
+    //console.log(market.equity.EQ)
     const condition = document.getElementById('market');
     const open = document.getElementById('open');
     const close = document.getElementById('close');
-    if (market.equity.equity.isOpen) {
+    if (market.equity.EQ.isOpen && market.equity.EQ.sessionHours) {
         condition.textContent = 'Open';
-        open.textContent = new Date(market.equity.equity.sessionHours.regularMarket[0].start).toLocaleTimeString();
-        close.textContent = new Date(market.equity.equity.sessionHours.regularMarket[0].end).toLocaleTimeString();
+        open.textContent = new Date(market.equity.EQ.sessionHours.regularMarket[0].start).toLocaleTimeString();
+        close.textContent = new Date(market.equity.EQ.sessionHours.regularMarket[0].end).toLocaleTimeString();
         condition.style.color = 'green';
         open.style.color = 'green';
         close.style.color = 'green';

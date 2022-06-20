@@ -1,6 +1,5 @@
 import fs from 'fs';
 
-// mkcert 192.168.1.194
 const key = fs.readFileSync('login/192.168.1.194-key.pem');
 const cert = fs.readFileSync('login/192.168.1.194.pem');
 

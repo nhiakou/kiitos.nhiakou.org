@@ -10,8 +10,8 @@ export function renderPositions(positions) {
         // document.getElementById(position.instrument.symbol + '-percent-profit').textContent = position.currentDayProfitLossPercentage;
 
         const currentPrice = parseFloat(document.getElementById(position.instrument.symbol + '-price').textContent.replace('$', ''));
-        formatToDollar(document.getElementById(position.instrument.symbol + '-dollar-profit'), (currentPrice - position.averagePrice) * (-position.shortQuantity || position.longQuantity));
-        formatToPercent(document.getElementById(position.instrument.symbol + '-percent-profit'), (currentPrice / position.averagePrice * 100 - 100)*(position.shortQuantity ? -1 : 1));
+        formatToDollar(document.getElementById(position.instrument.symbol + '-dollar-profit'), (position.averagePrice - currentPrice) * position.shortQuantity || (currentPrice - position.averagePrice) * position.longQuantity);
+        formatToPercent(document.getElementById(position.instrument.symbol + '-percent-profit'), position.shortQuantity > 0 ? (position.averagePrice / currentPrice * 100 - 100) : (currentPrice / position.averagePrice * 100 - 100));
     });
 }
 

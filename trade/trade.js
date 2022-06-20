@@ -4,7 +4,7 @@ import { analyzeStocks, renderTradePage } from './robot/god.mjs';
 let intervalID = null;
 
 window.startAnalyzing = () => {
-    intervalID = setInterval(analyzeStocks, 3*1000); // 15*60*1000
+    intervalID = setInterval(analyzeStocks, 1*1000); // 15*60*1000
 }
 
 window.stopAnalyzing = () => {

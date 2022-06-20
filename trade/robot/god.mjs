@@ -5,50 +5,80 @@ import { renderPositions, renderButtons } from '../render/positions.mjs';
 import { formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 import { sendMail } from '../admin/admin.mjs';
 
-const QUANTITY_STEP = 5;
-const MIN_PROFIT = 50;
-const STOP_LOSS = 100;
-const SUPPLY_DEMAND = 0.50; // ask vs bid size
+const QUANTITY_STEP = 5; // open slowly // close ALL right away?
+const MIN_PROFIT = 50; // => close position
+const STOP_LOSS = 100; // => close position
+const SUPPLY_DEMAND = 4; // => open short
+const DEMAND_SUPPLY = 4; // => open long
 
 export async function analyzeStocks() {
     const data = await renderTradePage();
+    data.positions.securitiesAccount.positions.forEach(position => data.stocks[position.instrument.symbol].position = position);
     console.log(data);
 
-    // todo: add bid size // add stocks to watch too!
-    data.positions.securitiesAccount.positions.forEach(position => {
-        const currentPriceString = document.getElementById(position.instrument.symbol + '-price').textContent;
-        const currentPriceFloat = parseFloat(currentPriceString.replace('$', ''));
-        const quantity = -position.shortQuantity || position.longQuantity;
-        const change = quantity > 0 ? currentPriceFloat - position.averagePrice : position.averagePrice - currentPriceFloat;
-        const profit = change >= 0;
+    ['BRK.B', 'AAPL', 'SQ', 'ABNB'].forEach(stock => {
+        
+        let averagePrice, quantity, change;
+        
+        if (data.stocks[stock].position) {
+            averagePrice = data.stocks[stock].position.averagePrice;
+            quantity = -data.stocks[stock].position.shortQuantity || data.stocks[stock].position.longQuantity;
+            change = quantity > 0 ? data.stocks[stock].mark - averagePrice : averagePrice - data.stocks[stock].mark;
+        } else {
+            averagePrice = data.stocks[stock].mark;
+            quantity = 1;
+            change = data.stocks[stock].mark - averagePrice;
+        }
 
+        const profit = change >= 0; 
+        const formattedAveragePrice = formatToDollars(averagePrice);
         const formattedChange = formatToDollars(change);
         const formattedQuantity = formatToQuantity(quantity);
-        const formattedDollarProfit = formatToDollars((currentPriceFloat - position.averagePrice) * quantity);
-        const formattedPercentProfit = formatToPercents((currentPriceFloat / position.averagePrice * 100 - 100)*Math.sign(quantity));
+        const formattedDollarProfit = formatToDollars(change * Math.abs(quantity));
+        const formattedPercentProfit = formatToPercents(quantity < 0 ? (averagePrice / data.stocks[stock].mark * 100 - 100) : (data.stocks[stock].mark / averagePrice * 100 - 100));
 
-        const subject = `${position.instrument.symbol}: ${formattedChange} x ${formattedQuantity} = ${formattedDollarProfit}`;
-        const message = `<u>${position.instrument.symbol}</u> x ${formattedQuantity}: <b style="color:${profit ? 'green' : 'red'}">${formattedChange}</b>
+        const subject = `${stock}: ${formattedChange} x ${formattedQuantity} = ${formattedDollarProfit} | ${formattedPercentProfit}`;
+        const message = `<u>${stock}</u>: <span style="color:${profit ? 'green' : 'red'}">${formattedChange}</span> x ${formattedQuantity} = <b style="color:${profit ? 'green' : 'red'}">${formattedDollarProfit}</b> | <span style="color:${profit ? 'green' : 'red'}">${formattedPercentProfit}</span>
         <br><br>
-        <b>$ Profit:</b> <span style="color:${profit ? 'green' : 'red'}">${formattedDollarProfit}</span>
+        Current: <span style="color:${profit ? 'green' : 'red'}">${formatToDollars(data.stocks[stock].mark)}</span>
         <br>
-        <b>% Profit:</b> <span style="color:${profit ? 'green' : 'red'}">${formattedPercentProfit}</span>
-        <br><br>
-        Current: <span style="color:${profit ? 'green' : 'red'}">${currentPriceString}</span>
+        Average: ${formattedAveragePrice}
         <br>
-        Average: ${formatToDollars(position.averagePrice)}
+        Volume: ${formatToQuantity(data.stocks[stock].totalVolume)}
         <br><br>
+        <u>Supply: <b>${(data.stocks[stock].askSize / data.stocks[stock].bidSize).toFixed(2)}</b>x</u>
+        <br>
+        Ask Price: ${formatToDollars(data.stocks[stock].askPrice)}
+        <br>
+        Ask Size: <b>${formatToQuantity(data.stocks[stock].askSize)}</b>
+        <br>
+        Highest Price: ${formatToDollars(data.stocks[stock].highPrice)}
+        <br><br>
+        <u>Demand: <b>${(data.stocks[stock].bidSize / data.stocks[stock].askSize).toFixed(2)}</b>x</u>
+        <br>
+        Bid Price: ${formatToDollars(data.stocks[stock].bidPrice)}
+        <br>
+        Bid Size: <b>${formatToQuantity(data.stocks[stock].bidSize)}</b>
+        <br>
+        Lowest Price: ${formatToDollars(data.stocks[stock].lowPrice)}
+        <br><br>
+        PE Ratio: ${data.stocks[stock].peRatio}
+        <br>
+        Volatility: ${data.stocks[stock].volatility}
+        <br>
+        1-Year: <b>${formatToDollars(data.stocks[stock]['52WkLow'])}</b> to <b>${formatToDollars(data.stocks[stock]['52WkHigh'])}</b>
         `;
 
         if (isMarketOpen(data.market)) sendMail(subject, message);
+        sendMail(subject, message)
     });
 }
 
 function isMarketOpen(market) {
-    if (market.equity.equity.isOpen) {
+    if (market.equity.EQ.isOpen) {
         const now = new Date();
-        const start = new Date(market.equity.equity.sessionHours.regularMarket[0].start);
-        const end = new Date(market.equity.equity.sessionHours.regularMarket[0].end);
+        const start = new Date(market.equity.EQ.sessionHours.regularMarket[0].start);
+        const end = new Date(market.equity.EQ.sessionHours.regularMarket[0].end);
         return start <= now && now <= end;
     } else {
         return false;
