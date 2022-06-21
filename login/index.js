@@ -1,11 +1,11 @@
-import { IP, LIVE, hasExpired } from "./fetch.mjs";
+import { LIVE, hasExpired } from "./fetch.mjs";
 
 const username = document.getElementById('username');
 const password = document.getElementById('password');
 const mail = document.getElementById('mail');
 const remember = document.getElementById('remember');
 
-// refresh token expires after 7776000 seconds = 90 days
+// refresh token expires after 7776000 seconds = 90 days or 3 months
 window.onload = () => {
     document.getElementById('renew').disabled = LIVE;
 
@@ -35,7 +35,7 @@ window.login = async (button) => {
     button.disabled = true;
     button.textContent = "Please approve on your mobile device";
 
-    const response = await fetch(IP + '/login', {
+    const response = await fetch('https://dns.nhiakou.org:999/login', {
         method: 'POST',
         mode: 'cors',
         headers: {'Content-Type': 'application/json'},
@@ -52,7 +52,7 @@ window.login = async (button) => {
 
 window.copyTokens = async (button) => {
     button.disabled = true;
-    const response = await fetch(IP + '/');
+    const response = await fetch('https://dns.nhiakou.org:999/');
     setTokens(await response.json());
     window.location.href = '/account/account.html';
 }

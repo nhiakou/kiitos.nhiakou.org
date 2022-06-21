@@ -4,7 +4,7 @@
   "description": "Kiitos",
   "main": "kiitos.mjs",
   "scripts": {
-    "start": "nodemon kiitos.mjs",
+    "start": "sudo nodemon kiitos.mjs",
     "test": "",
     "build1": "browserify libraries/LST.mjs -p esmify --s LST > libraries/LST.min.js",
     "build2": "browserify libraries/Astro.js --s Astro > libraries/Astro.min.js"

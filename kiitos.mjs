@@ -4,7 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import fetch from 'node-fetch';
 import puppeteer from 'puppeteer';
-import { key, cert, client_id, redirect_uri } from './login/credentials.mjs';
+import { cert, key, client_id, redirect_uri } from './login/private/credentials.mjs';
 
 const bot = express();
 bot.use(cors());
@@ -12,7 +12,7 @@ bot.use(express.json());
 bot.use(express.urlencoded({ extended: true })); 
 
 bot.get('/', async (req, res) => {
-    res.json(JSON.parse(await fs.readFile('login/credentials.json')));
+    res.json(JSON.parse(await fs.readFile('login/private/credentials.json')));
 });
 
 bot.post('/login', async (req, res) => {
@@ -60,7 +60,7 @@ async function saveTokens(tokens) {
     tokens.account_id = await getAccountID(tokens.access_token);
     tokens.access_last_update = new Date().toString();
     tokens.refresh_last_update = new Date().toString();
-    await fs.writeFile('login/credentials.json', JSON.stringify(tokens));
+    await fs.writeFile('login/private/credentials.json', JSON.stringify(tokens));
     return tokens;
 }
 
