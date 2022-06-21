@@ -1,13 +1,18 @@
-import { hasExpired } from "/login/fetch.mjs";
-import { analyzeStocks, renderTradePage } from './robot/god.mjs';
+import { LIVE, hasExpired } from "/login/fetch.mjs";
+import { renderTradePage } from "./render/render.mjs";
+import { analyzeStocks } from './robot/god.mjs';
 
 let intervalID = null;
 
-window.startAnalyzing = () => {
-    intervalID = setInterval(analyzeStocks, 1*1000); // 15*60*1000
+window.startAnalyzing = button => {
+    button.disabled = true;
+    document.getElementById('stop').disabled = false;
+    intervalID = setInterval(analyzeStocks, LIVE ? 15*60*1000 : 1*1000);
 }
 
-window.stopAnalyzing = () => {
+window.stopAnalyzing = button => {
+    button.disabled = true;
+    document.getElementById('start').disabled = false;
     clearInterval(intervalID);
 }
 

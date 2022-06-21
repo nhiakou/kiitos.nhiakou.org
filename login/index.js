@@ -1,4 +1,4 @@
-import { IP, hasExpired } from "./fetch.mjs";
+import { IP, LIVE, hasExpired } from "./fetch.mjs";
 
 const username = document.getElementById('username');
 const password = document.getElementById('password');
@@ -7,7 +7,7 @@ const remember = document.getElementById('remember');
 
 // refresh token expires after 7776000 seconds = 90 days
 window.onload = () => {
-    document.getElementById(window.location.hostname === 'kiitos.nhiakou.org' ? 'renew' : 'copy').disabled = true;
+    document.getElementById(LIVE ? 'renew' : 'copy').disabled = true;
 
     if (hasExpired(localStorage.getItem('refresh_last_update'), localStorage.getItem('refresh_token_expires_in'))) {
         username.value = localStorage.getItem('username') || "";

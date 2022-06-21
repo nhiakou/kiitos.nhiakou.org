@@ -1,5 +1,7 @@
 const IP = "https://192.168.1.194:999";
-export { IP };
+const LIVE = window.location.hostname === 'kiitos.nhiakou.org';
+
+export { IP, LIVE };
 
 export async function postData(url = '', data = {}) {
     const response = await fetch(url, {

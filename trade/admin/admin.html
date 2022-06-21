@@ -3,39 +3,23 @@
         <title>Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="module">
-            import { getData, deleteOrder } from "/login/fetch.mjs";
-            import { sendMail } from "./admin.mjs";
+            import { LIVE, getData, deleteOrder } from "/login/fetch.mjs";
+            import { MAX_STOCK, QUANTITY_STEP } from '../robot/level.mjs';
+            import { confirmMarketOrder } from '../tda.mjs';
+            import { renderOrders, sendMail } from "./admin.mjs";
 
             let orders = null;
+            const range = document.getElementById('range-quantity');
+            const number = document.getElementById('number-quantity');
 
             window.onload = async () => {
-                orders = await getData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/savedorders`);
-                const ol = document.querySelector('ol');
-
-                orders.forEach(order => {
-                    const li = document.createElement('li');
-                    const ul = document.createElement('ul');
-                    ol.append(li);
-                    li.append(ul);
-                    
-                    for (const prop in order) {
-                        const li = document.createElement('li');
-                        const b = document.createElement('b');
-                        const span = document.createElement('span');
-                        b.textContent = prop + ": ";
-
-                        if (prop === 'orderLegCollection') {
-                            span.textContent = JSON.stringify(order.orderLegCollection);
-                        } else if (prop === 'savedTime') {
-                            span.textContent = new Date(order.savedTime).toLocaleString();
-                        } else {
-                            span.textContent = order[prop];
-                        }
-
-                        li.append(b, span);
-                        ul.append(li);
-                    }
-                })
+                range.step = QUANTITY_STEP;
+                range.min = QUANTITY_STEP;
+                range.max = MAX_STOCK;
+                number.step = QUANTITY_STEP;
+                number.min = QUANTITY_STEP;
+                number.max = MAX_STOCK;
+                orders = await renderOrders();
             }
 
             window.deleteAll = async button => {
@@ -44,7 +28,24 @@
                 window.location.reload();
             }
 
-            window.sendMail = async () => console.log(await sendMail("Hello World!", "Yay!"));
+            window.updateQuantity = input => {
+                if (input === range) {
+                    number.value = input.value
+                } else {
+                    range.value = input.value
+                }
+            }
+
+            window.placeOrder = async event => {
+                event.preventDefault();
+                const input = Object.fromEntries(new FormData(event.target));
+                await confirmMarketOrder(input.order, input.symbol, input.quantity);
+
+                if (LIVE) {
+                    const message = `${input.order}: ${input.symbol} x ${input.quantity}`;
+                    await sendMail(message, message);
+                }
+            }
         </script>
         <style>
             body {
@@ -59,10 +60,36 @@
             <a href="/trade/trade.html">Trade</a>
         </header>
         <main>
-            <ol></ol>
+            <br>
+            <form onsubmit="placeOrder(event)">
+                <select name="symbol">
+                    <optgroup label="Cash">
+                        <option>AAPL</option>
+                    </optgroup>
+                    <optgroup label="Margin">
+                        <option selected>SQ</option>
+                        <option>ABNB</option>
+                    </optgroup>
+                </select>
+                <select name="order">
+                    <optgroup label="Bear">
+                        <option selected>Short</option>
+                        <option>Cover</option>
+                    </optgroup>
+                    <optgroup label="Bull">
+                        <option>Buy</option>
+                        <option>Sell</option>
+                    </optgroup>
+                </select>
+                <br><br>
+                <input id="number-quantity" name="quantity" type="number" value="5" onchange="updateQuantity(this)">
+                <input id="range-quantity" type="range" value="5" onchange="updateQuantity(this)">
+                <br><br>
+                <button type="submit">Submit</button>
+            </form>
         </main>
         <footer>
-            <button onclick="sendMail()">Send Email</button>
+            <ol></ol>
             <button onclick="deleteAll(this)">Delete All</button>
         </footer>
     </body>

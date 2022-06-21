@@ -1,8 +1,4 @@
-// MY CURRENT LEVEL
 const STOCK = 'SQ'; // opposes BERK.B
-const MAX_MARGIN = 10000;
-const MAX_STOCK = 100;
-// sell if gain of $1
 
 function brain() {
 
