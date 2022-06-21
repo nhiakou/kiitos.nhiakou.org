@@ -1,4 +1,4 @@
 import os from 'os';
 
-console.log('https://' + os.networkInterfaces().en0[0].address + ':999');
+console.log(os.networkInterfaces().en0[0].address);
 // mkcert 192.168.1.194

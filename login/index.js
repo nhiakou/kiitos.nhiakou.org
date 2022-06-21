@@ -7,7 +7,7 @@ const remember = document.getElementById('remember');
 
 // refresh token expires after 7776000 seconds = 90 days
 window.onload = () => {
-    document.getElementById(LIVE ? 'renew' : 'copy').disabled = true;
+    document.getElementById('renew').disabled = LIVE;
 
     if (hasExpired(localStorage.getItem('refresh_last_update'), localStorage.getItem('refresh_token_expires_in'))) {
         username.value = localStorage.getItem('username') || "";
