@@ -1,4 +1,4 @@
-const IP = "http://192.168.1.194:666";
+const IP = "https://192.168.1.194:999";
 const LIVE = window.location.hostname === 'kiitos.nhiakou.org';
 
 export { IP, LIVE };

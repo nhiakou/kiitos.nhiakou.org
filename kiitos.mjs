@@ -1,5 +1,4 @@
 import { promises as fs } from 'fs';
-import http from 'http';
 import https from 'https';
 import express from 'express';
 import cors from 'cors';
@@ -75,5 +74,4 @@ async function getAccountID(accessToken) {
     return accounts[0].securitiesAccount.accountId;
 }
 
-http.createServer(bot).listen(666); // later: fix https issue
 https.createServer({key, cert}, bot).listen(999);
