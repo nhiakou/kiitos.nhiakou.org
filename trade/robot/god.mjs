@@ -24,21 +24,20 @@ TODO:
 
 */
 
+import { LIVE } from "/login/fetch.mjs";
 import { renderTradePage } from "../render/render.mjs";
 import { sendAlert } from "./alert.mjs";
 import { kiitos } from "./brain.mjs";
 
 export async function analyzeStocks() {
    const data = await renderTradePage();
-   data.positions.securitiesAccount.positions.forEach(position => data.stocks[position.instrument.symbol].position = position);
-   
    console.info(new Date().toLocaleString())
    console.log(data);
 
-   if (isMarketOpen(data.market)) {
+   //if (LIVE && isMarketOpen(data.market)) {
       kiitos(data);
       sendAlert(data.stocks);
-   }
+   //}
 }
 
 export function isMarketOpen(market) {

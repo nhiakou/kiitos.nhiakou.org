@@ -1,12 +1,21 @@
-import { LIVE, getData, postData } from "/login/fetch.mjs";
+import { getTDA as getAccount } from "/account/tda.mjs"; 
+import { getData, postData } from "/login/fetch.mjs";
 import { sendMail } from "./admin/admin.mjs";
 
 export async function getTDA() {
-    const account = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: '' });
+    const { account, history } = await getAccount();
     const market = await getData('https://api.tdameritrade.com/v1/marketdata/EQUITY/hours', { date: new Date().toISOString() });
-    const positions = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: 'positions' });
     const stocks = await getData('https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: '$DJI,$SPX.X,$COMPX,BRK.A,BRK.B,AAPL,SQ,ABNB' });
-    return { account, market, positions, stocks };
+    const positions = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: 'positions' });
+
+    for (const stock in stocks) {
+        stocks[stock].position = positions.securitiesAccount.positions.find(position => position.instrument.symbol === stock);
+        stocks[stock].lastTrade = history.find(trade => trade.transactionItem.instrument.symbol === stock);
+    }
+
+    console.log(account)
+    console.log(stocks)
+    return { account, market, stocks };
 }
 
 export async function confirmMarketOrder(order, symbol, quantity) {
@@ -28,10 +37,8 @@ export async function placeMarketOrder(order, symbol, quantity) {
             return {status: await closeShortPosition(symbol, quantity)};
     }
     
-    if (LIVE) {
-        const message = `${order}: ${symbol} x ${quantity}`;
-        await sendMail(message, message);
-    }
+    const message = `${order}: ${symbol} x ${quantity}`;
+    await sendMail(message, message);
 }
 
 // buy long

@@ -9,8 +9,8 @@ export async function renderTradePage() {
 
     renderMarket(data.market);
     renderMarkets(data.stocks);
-    renderPositions(data.positions);
-    renderButtons(data.positions);
+    renderPositions(data.stocks);
+    renderButtons(data.stocks);
 
     return data;
 }

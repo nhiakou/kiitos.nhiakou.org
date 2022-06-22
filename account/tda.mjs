@@ -3,7 +3,7 @@ import { getData } from "/login/fetch.mjs";
 export async function getTDA() {
     const account = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: '' });
     const history = await getData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/transactions`, { type: 'trade', startDate: getDate(false), endDate: getDate(true) });
-    return { account, history };
+    return { account, history: history.filter(trade => trade.type === 'TRADE') };
 }
 
 function getDate(now) {

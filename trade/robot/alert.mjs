@@ -1,8 +1,9 @@
+import { WATCHLIST } from "./brain.mjs";
 import { formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 import { sendMail } from '../admin/admin.mjs';
 
 export function sendAlert(stocks) {
-    ['BRK.B', 'AAPL', 'SQ', 'ABNB'].forEach(stock => {
+    WATCHLIST.forEach(stock => {
         
         let averagePrice, quantity, change;
         

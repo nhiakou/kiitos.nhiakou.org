@@ -1,11 +1,11 @@
 import { formatToDollar } from "/utils.mjs";
 
 export function renderAccount(account) {
-    console.log(account)
+    //console.log(account)
     document.getElementById('trader').textContent = account.securitiesAccount.isDayTrader ? "Yes": "No";
     document.getElementById('trips').textContent = account.securitiesAccount.roundTrips;
-    formatToDollar(document.getElementById('available-cash'), account.securitiesAccount.currentBalances.cashBalance);
-    formatToDollar(document.getElementById('available-margin'), account.securitiesAccount.projectedBalances.stockBuyingPower);
+    formatToDollar(document.getElementById('available-cash'), account.securitiesAccount.currentBalances.availableFundsNonMarginableTrade);
+    formatToDollar(document.getElementById('available-margin'), account.securitiesAccount.currentBalances.buyingPower);
     formatToDollar(document.getElementById('margin-balance'), account.securitiesAccount.currentBalances.marginBalance);
     formatToDollar(document.getElementById('daily-interest'), account.securitiesAccount.currentBalances.marginBalance * interestRate(-account.securitiesAccount.currentBalances.marginBalance) / 360);
     formatToDollar(document.getElementById('margin-equity'), account.securitiesAccount.currentBalances.equity);

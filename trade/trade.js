@@ -1,13 +1,14 @@
 import { KIITOS, LIVE, hasExpired } from "/login/fetch.mjs";
 import { renderTradePage } from "./render/render.mjs";
 import { analyzeStocks } from './robot/god.mjs';
+import { INTERVAL } from "./robot/brain.mjs";
 
 let intervalID = null;
 
 window.startAnalyzing = button => {
     button.disabled = true;
     document.getElementById('stop').disabled = false;
-    intervalID = setInterval(analyzeStocks, LIVE ? 15*60*1000 : 1*1000);
+    intervalID = setInterval(analyzeStocks, LIVE ? INTERVAL*60*1000 : 1*1000);
 }
 
 window.stopAnalyzing = button => {
@@ -23,7 +24,7 @@ window.onload = async () => {
         localStorage.setItem('market', localStorage.getItem('market') || 0);
         document.getElementById(Number(localStorage.getItem('market')) ? 'market-bull' : 'market-bear').checked = true;
         document.getElementById('admin').style.textDecorationLine = Number(localStorage.getItem('test')) ? 'none' : 'line-through';
-        document.getElementById('start').disabled = KIITOS && LIVE;
+        if (LIVE) document.getElementById('start').disabled = !KIITOS;
 
         marketState();
         await renderTradePage();

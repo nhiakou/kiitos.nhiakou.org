@@ -1,3 +1,4 @@
+import { INDEXES, WATCHLIST } from "../robot/brain.mjs";
 import { isMarketOpen } from "../robot/god.mjs";
 import { formatToDollar, formatToPercent, formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 
@@ -22,13 +23,13 @@ export function renderMarket(market) {
 }
 
 export function renderMarkets(stocks) {
-    ['$DJI', '$SPX.X', '$COMPX'].forEach(index => {
+    INDEXES.forEach(index => {
         document.getElementById(index).textContent = formatToDollars(stocks[index].lastPrice);
         formatToDollar(document.getElementById(index + '-dollar'), stocks[index].netChange);
         formatToPercent(document.getElementById(index + '-percent'), stocks[index].netPercentChangeInDouble);
     });
 
-    ['BRK.B', 'AAPL', 'SQ', 'ABNB'].forEach(stock => {
+    WATCHLIST.forEach(stock => {
         document.getElementById(stock + '-bid-price').textContent = formatToDollars(stocks[stock].bidPrice);
         document.getElementById(stock + '-bid-size').textContent = formatToQuantity(stocks[stock].bidSize);
         document.getElementById(stock + '-ask-price').textContent = formatToDollars(stocks[stock].askPrice);
