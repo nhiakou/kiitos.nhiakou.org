@@ -1,4 +1,4 @@
-import { LIVE, hasExpired } from "/login/fetch.mjs";
+import { KIITOS, LIVE, hasExpired } from "/login/fetch.mjs";
 import { renderTradePage } from "./render/render.mjs";
 import { analyzeStocks } from './robot/god.mjs';
 
@@ -23,6 +23,7 @@ window.onload = async () => {
         localStorage.setItem('market', localStorage.getItem('market') || 0);
         document.getElementById(Number(localStorage.getItem('market')) ? 'market-bull' : 'market-bear').checked = true;
         document.getElementById('admin').style.textDecorationLine = Number(localStorage.getItem('test')) ? 'none' : 'line-through';
+        document.getElementById('start').disabled = KIITOS && LIVE;
 
         marketState();
         await renderTradePage();

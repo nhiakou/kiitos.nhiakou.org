@@ -1,7 +1,7 @@
 import { formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 import { sendMail } from '../admin/admin.mjs';
 
-export function sendAlert(market, stocks) {
+export function sendAlert(stocks) {
     ['BRK.B', 'AAPL', 'SQ', 'ABNB'].forEach(stock => {
         
         let averagePrice, quantity, change;
@@ -55,18 +55,7 @@ export function sendAlert(market, stocks) {
         1-Year: <b>${formatToDollars(stocks[stock]['52WkLow'])}</b> to <b>${formatToDollars(stocks[stock]['52WkHigh'])}</b>
         `;
 
-        if (isMarketOpen(market)) sendMail(subject, message);
+        sendMail(subject, message);
         
     });
-}
-
-export function isMarketOpen(market) {
-    if (market.equity.EQ.isOpen) {
-        const now = new Date();
-        const start = new Date(market.equity.EQ.sessionHours.regularMarket[0].start);
-        const end = new Date(market.equity.EQ.sessionHours.regularMarket[0].end);
-        return start <= now && now <= end;
-    } else {
-        return false;
-    }
 }

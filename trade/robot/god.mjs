@@ -35,6 +35,19 @@ export async function analyzeStocks() {
    console.info(new Date().toLocaleString())
    console.log(data);
 
-   kiitos(data);
-   sendAlert(data.market, data.stocks);
+   if (isMarketOpen(data.market)) {
+      kiitos(data);
+      sendAlert(data.stocks);
+   }
+}
+
+export function isMarketOpen(market) {
+   if (market.equity.EQ.isOpen && market.equity.EQ.sessionHours) {
+       const now = new Date();
+       const start = new Date(market.equity.EQ.sessionHours.regularMarket[0].start);
+       const end = new Date(market.equity.EQ.sessionHours.regularMarket[0].end);
+       return start <= now && now <= end;
+   } else {
+       return false;
+   }
 }

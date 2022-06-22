@@ -1,21 +1,62 @@
+// ACCOUNT
+
+const MAX_STOCK = 15; // total = 3x
+function hasStockReachedMax(position) {
+    const total = position.shortQuantity || position.longQuantity;
+    return total > MAX_STOCK;
+}
+
+const MIN_PROFIT = 50; // => close position
+function hasPositionReachedMinProfit(stock, position) {
+    if (position.shortQuantity) {
+        return (position.averagePrice - stock.mark) * position.shortQuantity > MIN_PROFIT;
+    } else {
+        return (stock.mark - position.averagePrice) * position.longQuantity > MIN_PROFIT;
+    }
+}
+
+const STOP_LOSS = 100; // => close position
+function hasPositionReachedMaxLoss(stock, position) {
+    if (position.shortQuantity) {
+        return (stock.mark - position.averagePrice) * position.shortQuantity > STOP_LOSS;
+    } else {
+        return (position.averagePrice - stock.mark) * position.longQuantity > STOP_LOSS;
+    }
+}
+
+const START = 8; // start trading hour
+const END = 10; // end trading hour
+function isTradingHour() {
+    const now = new Date();
+    return START <= now.getHours() && now.getHours() <= END;
+}
+
+const DAYRULE = new Date(); // day trader rule = at least 12 hours have passed
+function isRoundTrip(position) {
+    
+}
+
 // MY CURRENT LEVEL
 const MARKET_CONDITION = 2; // BRK.B = supply / demand => bear
-const STOCKS = ['AAPL', 'SQ', 'ABNB'];
-const START = new Date(); // begin trading
-const END = new Date(); // end trading
 
 const QUANTITY_STEP = 5; // open slowly // close ALL right away?
-const MAX_STOCK = 30; // sell if gain of $1
-const MIN_PROFIT = 50; // => close position
-const STOP_LOSS = 100; // => close position
 
-//BEAR
-const SUPPLY_DEMAND = 4; // => open short
-const MIN_MARGIN = 20000;
-
-//BULL
+// BULL
+const MARGIN_STOCKS = ['AAPL'];
 const DEMAND_SUPPLY = 4; // => open long
-const MAX_CASH = 20000;
+const MAX_CASH = 0.7; // using only 70% of available cash
+function hasEnoughCash(account, stock) {
+    return stock.mark * QUANTITY_STEP < account.securitiesAccount.currentBalances.equity * MAX_CASH;
+}
+
+// BEAR
+const CASH_STOCKS = ['SQ', 'ABNB'];
+const SUPPLY_DEMAND = 4; // => open short
+const MAX_MARGIN = 0.5; // using only 50% of available margin
+function hasEnoughMargin(account, stock) {
+    return stock.mark * QUANTITY_STEP < account.securitiesAccount.projectedBalances.stockBuyingPower * MAX_MARGIN;
+}
+
 
 export function kiitos(data) {
     // supply / demand 

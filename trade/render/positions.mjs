@@ -3,8 +3,9 @@ import { confirmMarketOrder } from '../tda.mjs';
 import { formatToDollar, formatToPercent, formatToDollars, formatToQuantity } from "/utils.mjs";
 
 export function renderPositions(positions) {
+    const stocks = ['AAPL', 'SQ', 'ABNB'];
     //console.log(positions.securitiesAccount.positions)
-    positions.securitiesAccount.positions.forEach(position => {
+    positions.securitiesAccount.positions.filter(position => stocks.includes(position.instrument.symbol)).forEach(position => {
         document.getElementById(position.instrument.symbol + '-cost').textContent = formatToDollars(position.averagePrice);
         document.getElementById(position.instrument.symbol + '-quantity').textContent = formatToQuantity(-position.shortQuantity || position.longQuantity); // position.settledShortQuantity || position.settledLongQuantity
         // document.getElementById(position.instrument.symbol + '-dollar-profit').textContent = position.currentDayProfitLoss;

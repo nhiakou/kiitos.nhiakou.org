@@ -44,5 +44,6 @@ export async function sendMail(subject, html) {
         })
     });
     
+    console.log(subject, html);
     return mail.json();
 }

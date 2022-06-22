@@ -1,4 +1,5 @@
-import { getData, postData } from "/login/fetch.mjs";
+import { LIVE, getData, postData } from "/login/fetch.mjs";
+import { sendMail } from "./admin/admin.mjs";
 
 export async function getTDA() {
     const account = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: '' });
@@ -25,7 +26,12 @@ export async function placeMarketOrder(order, symbol, quantity) {
             return {status: await openShortPosition(symbol, quantity)};
         case 'Cover':
             return {status: await closeShortPosition(symbol, quantity)};
-    }        
+    }
+    
+    if (LIVE) {
+        const message = `${order}: ${symbol} x ${quantity}`;
+        await sendMail(message, message);
+    }
 }
 
 // buy long

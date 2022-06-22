@@ -1,5 +1,6 @@
+const KIITOS = /\bCrOS\b/.test(navigator.userAgent);
 const LIVE = window.location.hostname === 'kiitos.nhiakou.org';
-export { LIVE };
+export { KIITOS, LIVE };
 
 export async function postData(url = '', data = {}) {
     const response = await fetch(url, {

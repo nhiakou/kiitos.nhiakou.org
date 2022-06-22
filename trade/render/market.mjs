@@ -1,3 +1,4 @@
+import { isMarketOpen } from "../robot/god.mjs";
 import { formatToDollar, formatToPercent, formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 
 export function renderMarket(market) {
@@ -5,7 +6,7 @@ export function renderMarket(market) {
     const condition = document.getElementById('market');
     const open = document.getElementById('open');
     const close = document.getElementById('close');
-    if (market.equity.EQ.isOpen && market.equity.EQ.sessionHours) {
+    if (isMarketOpen(market)) {
         condition.textContent = 'Open';
         open.textContent = new Date(market.equity.EQ.sessionHours.regularMarket[0].start).toLocaleTimeString();
         close.textContent = new Date(market.equity.EQ.sessionHours.regularMarket[0].end).toLocaleTimeString();
