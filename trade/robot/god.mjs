@@ -26,12 +26,15 @@ TODO:
 
 import { renderTradePage } from "../render/render.mjs";
 import { sendAlert } from "./alert.mjs";
+import { kiitos } from "./brain.mjs";
 
 export async function analyzeStocks() {
-    const data = await renderTradePage();
-    data.positions.securitiesAccount.positions.forEach(position => data.stocks[position.instrument.symbol].position = position);
-    console.info(new Date().toLocaleString())
-    console.log(data);
+   const data = await renderTradePage();
+   data.positions.securitiesAccount.positions.forEach(position => data.stocks[position.instrument.symbol].position = position);
+   
+   console.info(new Date().toLocaleString())
+   console.log(data);
 
-    sendAlert(data.market, data.stocks);
+   kiitos(data);
+   sendAlert(data.market, data.stocks);
 }

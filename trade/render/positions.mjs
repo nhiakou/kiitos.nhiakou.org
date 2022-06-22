@@ -1,4 +1,4 @@
-import { QUANTITY_STEP } from '../robot/level.mjs';
+import { QUANTITY_STEP } from '../robot/brain.mjs';
 import { confirmMarketOrder } from '../tda.mjs';
 import { formatToDollar, formatToPercent, formatToDollars, formatToQuantity } from "/utils.mjs";
 

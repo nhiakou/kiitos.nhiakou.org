@@ -1,10 +1,11 @@
 import { getData, postData } from "/login/fetch.mjs";
 
 export async function getTDA() {
+    const account = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: '' });
     const market = await getData('https://api.tdameritrade.com/v1/marketdata/EQUITY/hours', { date: new Date().toISOString() });
     const positions = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: 'positions' });
     const stocks = await getData('https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: '$DJI,$SPX.X,$COMPX,BRK.A,BRK.B,AAPL,SQ,ABNB' });
-    return { market, positions, stocks };
+    return { account, market, positions, stocks };
 }
 
 export async function confirmMarketOrder(order, symbol, quantity) {
