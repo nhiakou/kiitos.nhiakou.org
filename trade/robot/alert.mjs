@@ -11,7 +11,7 @@ export function sendAlert(market, stocks) {
             quantity = -stocks[stock].position.shortQuantity || stocks[stock].position.longQuantity;
             change = quantity > 0 ? stocks[stock].mark - averagePrice : averagePrice - stocks[stock].mark;
         } else {
-            averagePrice = stocks[stock].mark;
+            averagePrice = stocks[stock].closePrice;
             quantity = 1;
             change = stocks[stock].mark - averagePrice;
         }

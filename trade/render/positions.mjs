@@ -16,11 +16,40 @@ export function renderPositions(positions) {
     });
 }
 
-export function renderButtons() {
+export function renderButtons(positions) {
     ['AAPL', 'SQ', 'ABNB'].forEach(stock => {
-        document.getElementById(stock + '-buy').onclick = () => confirmMarketOrder('Buy', stock, QUANTITY_STEP);
-        document.getElementById(stock + '-sell').onclick = () => confirmMarketOrder('Sell', stock, QUANTITY_STEP);
-        document.getElementById(stock + '-borrow').onclick = () => confirmMarketOrder('Short', stock, QUANTITY_STEP);
-        document.getElementById(stock + '-return').onclick = () => confirmMarketOrder('Cover', stock, QUANTITY_STEP);
+        const position = positions.securitiesAccount.positions.find(position => position.instrument.symbol === stock);
+        placeOrder('Buy', document.getElementById(stock + '-buy'), stock, position);
+        placeOrder('Sell', document.getElementById(stock + '-sell'), stock, position);
+        placeOrder('Short', document.getElementById(stock + '-borrow'), stock, position);
+        placeOrder('Cover', document.getElementById(stock + '-return'), stock, position);
     });
 }
+
+function placeOrder(order, button, stock, position) {
+    if (position) {
+        if (position.shortQuantity) {
+            if (order === 'Cover') {
+                button.onclick = () => confirmMarketOrder(order, stock, position.shortQuantity);
+            } else if (order === 'Short') {
+                button.onclick = () => confirmMarketOrder(order, stock, QUANTITY_STEP);
+            } else {
+                button.disabled = true;
+            }
+        } else {
+            if (order === 'Sell') {
+                button.onclick = () => confirmMarketOrder(order, stock, position.longQuantity);
+            } else if (order === 'Buy') {
+                button.onclick = () => confirmMarketOrder(order, stock, QUANTITY_STEP);
+            } else {
+                button.disabled = true;
+            }
+        }
+    } else {
+        if (order === 'Short' || order === 'Buy') {
+            button.onclick = () => confirmMarketOrder(order, stock, QUANTITY_STEP);
+        } else {
+            button.disabled = true;
+        }
+    }
+} 

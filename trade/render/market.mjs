@@ -32,8 +32,8 @@ export function renderMarkets(stocks) {
         document.getElementById(stock + '-price').textContent = formatToDollars(stocks[stock].mark);
         //document.getElementById(stock + '-dollar-price-change').textContent = formatToDollars(stocks[stock].markChangeInDouble);
         //document.getElementById(stock + '-percent-price-change').textContent = formatToPercents(stocks[stock].markPercentChangeInDouble);
-        formatToDollar(document.getElementById(stock + '-dollar-price-change'), stocks[stock].closePrice - stocks[stock].openPrice);
-        formatToPercent(document.getElementById(stock + '-percent-price-change'), stocks[stock].closePrice / stocks[stock].openPrice * 100 - 100);
+        formatToDollar(document.getElementById(stock + '-dollar-price-change'), stocks[stock].mark - stocks[stock].closePrice);
+        formatToPercent(document.getElementById(stock + '-percent-price-change'), stocks[stock].mark / stocks[stock].closePrice * 100 - 100);
         document.getElementById(stock + '-open-price').textContent = formatToDollars(stocks[stock].openPrice);
         document.getElementById(stock + '-close-price').textContent = formatToDollars(stocks[stock].closePrice);
         //document.getElementById(stock + '-net-change').textContent = formatToDollars(stocks[stock].netChange);

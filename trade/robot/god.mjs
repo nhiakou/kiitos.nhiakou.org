@@ -20,7 +20,6 @@ REMEMBER:
 4. I can update formulas but at night (good sidereal)
 
 TODO:
-- get coinbase data over weekend for monday trading of SQ ?
 - later: sound effects alarms // when begin, start, successful trade
 
 */
@@ -31,6 +30,7 @@ import { sendAlert } from "./alert.mjs";
 export async function analyzeStocks() {
     const data = await renderTradePage();
     data.positions.securitiesAccount.positions.forEach(position => data.stocks[position.instrument.symbol].position = position);
+    console.info(new Date().toLocaleString())
     console.log(data);
 
     sendAlert(data.market, data.stocks);
