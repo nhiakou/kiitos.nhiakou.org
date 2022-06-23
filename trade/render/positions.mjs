@@ -1,4 +1,4 @@
-import { STOCKS, QUANTITY_STEP } from '../robot/brain.mjs';
+import { STOCKS } from '../robot/brain.mjs';
 import { confirmMarketOrder } from '../tda.mjs';
 import { formatToDollar, formatToPercent, formatToDollars, formatToQuantity } from "/utils.mjs";
 
@@ -27,27 +27,32 @@ export function renderButtons(stocks) {
 }
 
 function placeOrder(order, button, stock) {
+    const recommendedShortQuantity = Math.floor(stock.askSize / stock.bidSize);
+    const recommendedLongQuantity = Math.floor(stock.bidSize / stock.askSize);
+
     if (stock.position) {
         if (stock.position.shortQuantity) {
             if (order === 'Cover') {
                 button.onclick = () => confirmMarketOrder(order, stock.symbol, stock.position.shortQuantity);
-            } else if (order === 'Short') {
-                button.onclick = () => confirmMarketOrder(order, stock.symbol, QUANTITY_STEP);
+            } else if (order === 'Short' && recommendedShortQuantity) {
+                button.onclick = () => confirmMarketOrder(order, stock.symbol, recommendedShortQuantity);
             } else {
                 button.disabled = true;
             }
         } else {
             if (order === 'Sell') {
                 button.onclick = () => confirmMarketOrder(order, stock.symbol, stock.position.longQuantity);
-            } else if (order === 'Buy') {
-                button.onclick = () => confirmMarketOrder(order, stock.symbol, QUANTITY_STEP);
+            } else if (order === 'Buy' && recommendedLongQuantity) {
+                button.onclick = () => confirmMarketOrder(order, stock.symbol, recommendedLongQuantity);
             } else {
                 button.disabled = true;
             }
         }
     } else {
-        if (order === 'Short' || order === 'Buy') {
-            button.onclick = () => confirmMarketOrder(order, stock.symbol, QUANTITY_STEP);
+        if (order === 'Short' && recommendedShortQuantity) {
+            button.onclick = () => confirmMarketOrder(order, stock.symbol, recommendedShortQuantity);
+        } else if (order === 'Buy' && recommendedLongQuantity) {
+            button.onclick = () => confirmMarketOrder(order, stock.symbol, recommendedLongQuantity);
         } else {
             button.disabled = true;
         }

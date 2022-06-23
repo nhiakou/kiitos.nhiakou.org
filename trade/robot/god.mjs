@@ -34,10 +34,10 @@ export async function analyzeStocks() {
    console.info(new Date().toLocaleString())
    console.log(data);
 
-   //if (LIVE && isMarketOpen(data.market)) {
-      kiitos(data);
+   if (!LIVE || isMarketOpen(data.market)) {
+      kiitos(data.account, data.stocks);
       sendAlert(data.stocks);
-   //}
+   }
 }
 
 export function isMarketOpen(market) {
