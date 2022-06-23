@@ -19,7 +19,8 @@ export async function getTDA() {
 }
 
 export async function confirmMarketOrder(order, symbol, quantity) {
-    if (confirm(`Are you sure you want to ${order} ${quantity} shares of ${symbol}?`)) {
+    const test = Number(localStorage.getItem('test')) ? 'TEST' : 'REAL';
+    if (confirm(`${test}: Are you sure you want to ${order} ${quantity} shares of ${symbol}?`)) {
         await placeMarketOrder(order, symbol, quantity);
         window.location.reload();
     }
@@ -37,8 +38,9 @@ export async function placeMarketOrder(order, symbol, quantity) {
             return {status: await closeShortPosition(symbol, quantity)};
     }
     
-    const message = `${order}: ${symbol} x ${quantity}`;
-    await sendMail(message, message);
+    const subject = `${order}: ${symbol} x ${quantity}`;
+    const html = `<i>${order}</i>: <u>${symbol}</u> x <b>${quantity}</b>`;
+    await sendMail(subject, html);
 }
 
 // buy long

@@ -80,3 +80,15 @@ legend {
 select {
     margin: 10px;
 }
+
+label[for="market-bear"], #stop, .negative {
+    color: red;
+}
+
+label[for="market-bull"], #start, .positive {
+    color: green;
+}
+
+#admin {
+    color: white;
+}

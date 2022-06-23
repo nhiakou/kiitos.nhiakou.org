@@ -13,12 +13,15 @@
             const number = document.getElementById('number-quantity');
 
             window.onload = async () => {
+                document.getElementById('test').style.backgroundColor = Number(localStorage.getItem('test')) ? 'red' : 'green';
+
                 range.step = QUANTITY_STEP;
                 range.min = QUANTITY_STEP;
                 range.max = MAX_QUANTITY;
                 number.step = QUANTITY_STEP;
                 number.min = QUANTITY_STEP;
                 number.max = MAX_QUANTITY;
+
                 orders = await renderOrders();
             }
 
@@ -46,42 +49,70 @@
             body {
                 width: 100vw;
                 height: 100vh;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+
+            header {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: center;
+            }
+
+            ol {
+                overflow: scroll;
+            }
+
+            #test {
+                color: white;
+                padding: 3px 8px;
+                border-radius: 10%;
+                font-weight: bold;
             }
         </style>
     </head>
     <body>
         <header>
-            <a href="/account/account.html">Account</a>
-            <a href="/trade/trade.html">Trade</a>
+            <nav>
+                <a href="/account/account.html">Account</a>
+                <a href="/trade/trade.html">Trade</a>
+            </nav>
+            <span id="test">Test</span>
         </header>
+        <br>
         <main>
-            <br>
-            <form onsubmit="placeOrder(event)">
-                <select name="symbol">
-                    <optgroup label="Cash">
-                        <option>AAPL</option>
-                    </optgroup>
-                    <optgroup label="Margin">
-                        <option selected>SQ</option>
-                        <option>ABNB</option>
-                    </optgroup>
-                </select>
-                <select name="order">
-                    <optgroup label="Bear">
-                        <option selected>Short</option>
-                        <option>Cover</option>
-                    </optgroup>
-                    <optgroup label="Bull">
-                        <option>Buy</option>
-                        <option>Sell</option>
-                    </optgroup>
-                </select>
-                <br><br>
-                <input id="number-quantity" name="quantity" type="number" value="5" onchange="updateQuantity(this)">
-                <input id="range-quantity" type="range" value="5" onchange="updateQuantity(this)">
-                <br><br>
-                <button type="submit">Submit</button>
-            </form>
+            <fieldset>
+                <br>
+                <form onsubmit="placeOrder(event)">
+                    <select name="symbol">
+                        <optgroup label="Cash">
+                            <option>AAPL</option>
+                        </optgroup>
+                        <optgroup label="Margin">
+                            <option selected>SQ</option>
+                            <option>ABNB</option>
+                        </optgroup>
+                    </select>
+                    <select name="order">
+                        <optgroup label="Bear">
+                            <option selected>Short</option>
+                            <option>Cover</option>
+                        </optgroup>
+                        <optgroup label="Bull">
+                            <option>Buy</option>
+                            <option>Sell</option>
+                        </optgroup>
+                    </select>
+                    <br><br>
+                    <input id="number-quantity" name="quantity" type="number" value="5" onchange="updateQuantity(this)">
+                    <input id="range-quantity" type="range" value="5" onchange="updateQuantity(this)">
+                    <br><br>
+                    <input type="datetime-local">
+                    <br><br>
+                    <button type="submit">Submit</button>
+                </form>
+            </fieldset>
         </main>
         <footer>
             <ol></ol>

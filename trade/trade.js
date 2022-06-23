@@ -23,7 +23,7 @@ window.onload = async () => {
     } else {
         localStorage.setItem('market', localStorage.getItem('market') || 0);
         document.getElementById(Number(localStorage.getItem('market')) ? 'market-bull' : 'market-bear').checked = true;
-        document.getElementById('admin').style.textDecorationLine = Number(localStorage.getItem('test')) ? 'none' : 'line-through';
+        document.getElementById('admin').style.backgroundColor = Number(localStorage.getItem('test')) ? 'red' : 'green';
         if (LIVE) document.getElementById('start').disabled = !KIITOS;
 
         marketState();

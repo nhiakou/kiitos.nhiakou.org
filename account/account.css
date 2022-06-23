@@ -86,3 +86,11 @@ tfoot th {
     background-color: cornflowerblue;
     color: white;
 }
+
+label[for="test-true"] {
+    color: red;
+}
+
+label[for="test-false"] {
+    color: green;
+}

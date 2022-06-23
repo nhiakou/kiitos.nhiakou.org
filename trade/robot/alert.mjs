@@ -5,15 +5,17 @@ import { sendMail } from '../admin/admin.mjs';
 export function sendAlert(stocks) {
     WATCHLIST.forEach(stock => {
         
-        let averagePrice, quantity, change;
+        let position, averagePrice, quantity, change;
         
         if (stocks[stock].position) {
+            position = "x";
             averagePrice = stocks[stock].position.averagePrice;
             quantity = -stocks[stock].position.shortQuantity || stocks[stock].position.longQuantity;
             change = quantity > 0 ? stocks[stock].mark - averagePrice : averagePrice - stocks[stock].mark;
         } else {
+            position = "*";
             averagePrice = stocks[stock].closePrice;
-            quantity = 1;
+            quantity = 100;
             change = stocks[stock].mark - averagePrice;
         }
 
@@ -24,8 +26,8 @@ export function sendAlert(stocks) {
         const formattedDollarProfit = formatToDollars(change * Math.abs(quantity));
         const formattedPercentProfit = formatToPercents(quantity < 0 ? (averagePrice / stocks[stock].mark * 100 - 100) : (stocks[stock].mark / averagePrice * 100 - 100));
 
-        const subject = `${stock}: ${formattedChange} x ${formattedQuantity} = ${formattedDollarProfit} | ${formattedPercentProfit}`;
-        const message = `<u>${stock}</u>: <span style="color:${profit ? 'green' : 'red'}">${formattedChange}</span> x ${formattedQuantity} = <b style="color:${profit ? 'green' : 'red'}">${formattedDollarProfit}</b> | <span style="color:${profit ? 'green' : 'red'}">${formattedPercentProfit}</span>
+        const subject = `${stock}: ${formattedChange} ${position} ${formattedQuantity} = ${formattedDollarProfit} | ${formattedPercentProfit}`;
+        const message = `<u>${stock}</u>: <span style="color:${profit ? 'green' : 'red'}">${formattedChange}</span> ${position} ${formattedQuantity} = <b style="color:${profit ? 'green' : 'red'}">${formattedDollarProfit}</b> | <span style="color:${profit ? 'green' : 'red'}">${formattedPercentProfit}</span>
         <br><br>
         Current: <span style="color:${profit ? 'green' : 'red'}">${formatToDollars(stocks[stock].mark)}</span>
         <br>
