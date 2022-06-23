@@ -1,4 +1,4 @@
-const KIITOS = /\bCrOS\b/.test(navigator.userAgent);
+const KIITOS = navigator.userAgent.includes('Nexus 5'); // Nexus 5 Build/MRA58N
 const LIVE = window.location.hostname === 'kiitos.nhiakou.org';
 export { KIITOS, LIVE };
 
