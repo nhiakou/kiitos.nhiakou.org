@@ -48,7 +48,7 @@ async function getAccessToken() {
 
 export function hasExpired(date, expiration) {
     if (date && expiration) {
-        return Math.floor((new Date() - new Date(date)) / 1000) >= Number(expiration);
+        return (new Date() - new Date(date)) / 1000 >= Number(expiration);
     } else 
         return true;
 }

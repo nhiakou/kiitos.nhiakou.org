@@ -1,16 +1,7 @@
+import { CASH_STOCKS, MARGIN_STOCKS } from "./stocks.mjs";
 import { placeMarketOrder } from "../tda.mjs";
 
 const LEVEL = 0; // increase when have stable track record
-
-// free = 15 minutes delay (not real-time)
-// nasdaq quotes level 1 and 2 = $24/month // level 2 = order books
-// nyse quotes = $45/month
-const INDEXES = ['$DJI', '$SPX.X', '$COMPX'];
-const CASH_STOCKS = ['AAPL']; // aapl = nasdaq
-const MARGIN_STOCKS = ['SQ', 'ABNB']; // abnb = nasdaq; sq = nyse
-const STOCKS = [...CASH_STOCKS, ...MARGIN_STOCKS];
-const WATCHLIST = ['BRK.B', ...STOCKS]; // brk.b = nyse
-// todo: if want to switch cash/margin stocks, need to manually close first
 
 const INTERVAL = 15; // 30 minutes => 3hrs x 2 = 6 checks daily
 // most active trading time => more accurate supply/demand
@@ -72,7 +63,7 @@ function getAllowQuantity(stock, quantity) {
     }
 }
 
-export { INDEXES, WATCHLIST, STOCKS, MAX_QUANTITY, QUANTITY_STEP, INTERVAL };
+export { MAX_QUANTITY, QUANTITY_STEP, INTERVAL };
 
 // KIITOS
 

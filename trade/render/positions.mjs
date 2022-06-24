@@ -1,4 +1,4 @@
-import { STOCKS } from '../robot/brain.mjs';
+import { STOCKS } from '../robot/stocks.mjs';
 import { confirmMarketOrder } from '../tda.mjs';
 import { formatToDollar, formatToPercent, formatToDollars, formatToQuantity } from "/utils.mjs";
 

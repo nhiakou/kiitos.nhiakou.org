@@ -1,4 +1,4 @@
-import { INDEXES, WATCHLIST } from "../robot/brain.mjs";
+import { INDEXES, WATCHLIST } from "../robot/stocks.mjs";
 import { isMarketOpen } from "../robot/god.mjs";
 import { formatToDollar, formatToPercent, formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 

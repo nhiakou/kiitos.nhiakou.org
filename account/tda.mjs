@@ -1,5 +1,6 @@
 import { getData } from "/login/fetch.mjs";
 
+// sometimes cannot get account because of access denied... why?
 export async function getTDA() {
     const account = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: '' });
     const history = await getData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/transactions`, { type: 'trade', startDate: getDate(false), endDate: getDate(true) });

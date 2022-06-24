@@ -1,3 +1,4 @@
+import { ALL } from "./robot/stocks.mjs";
 import { getTDA as getAccount } from "/account/tda.mjs"; 
 import { getData, postData } from "/login/fetch.mjs";
 import { sendMail } from "./admin/admin.mjs";
@@ -5,7 +6,7 @@ import { sendMail } from "./admin/admin.mjs";
 export async function getTDA() {
     const { account, history } = await getAccount();
     const market = await getData('https://api.tdameritrade.com/v1/marketdata/EQUITY/hours', { date: new Date().toISOString() });
-    const stocks = await getData('https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: '$DJI,$SPX.X,$COMPX,BRK.A,BRK.B,AAPL,SQ,ABNB' });
+    const stocks = await getData('https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: ALL.join(",") });
     const positions = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: 'positions' });
 
     for (const stock in stocks) {
@@ -27,6 +28,10 @@ export async function confirmMarketOrder(order, symbol, quantity) {
 }
 
 export async function placeMarketOrder(order, symbol, quantity) {
+    const subject = `${order}: ${symbol} x ${quantity}`;
+    const html = `<i>${order}</i>: <u>${symbol}</u> x <b>${quantity}</b>`;
+    await sendMail(subject, html);
+    
     switch (order) {
         case 'Buy':
             return {status: await openLongPosition(symbol, quantity)};
@@ -37,10 +42,6 @@ export async function placeMarketOrder(order, symbol, quantity) {
         case 'Cover':
             return {status: await closeShortPosition(symbol, quantity)};
     }
-    
-    const subject = `${order}: ${symbol} x ${quantity}`;
-    const html = `<i>${order}</i>: <u>${symbol}</u> x <b>${quantity}</b>`;
-    await sendMail(subject, html);
 }
 
 // buy long

@@ -1,4 +1,4 @@
-import { WATCHLIST } from "./brain.mjs";
+import { WATCHLIST } from "./stocks.mjs";
 import { formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 import { sendMail } from '../admin/admin.mjs';
 
