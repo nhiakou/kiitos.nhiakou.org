@@ -1,9 +1,9 @@
-// LEVEL: increase when more confident!
-// todo: if want to reverse (boxed position), need to manually close it first
-
 import { placeMarketOrder } from "../tda.mjs";
 
-// nasdaq quotes level 1 and 2 = $24/month
+const LEVEL = 0; // increase when have stable track record
+
+// free = 15 minutes delay (not real-time)
+// nasdaq quotes level 1 and 2 = $24/month // level 2 = order books
 // nyse quotes = $45/month
 const INDEXES = ['$DJI', '$SPX.X', '$COMPX'];
 const CASH_STOCKS = ['AAPL']; // aapl = nasdaq
@@ -11,7 +11,9 @@ const MARGIN_STOCKS = ['SQ', 'ABNB']; // abnb = nasdaq; sq = nyse
 const STOCKS = [...CASH_STOCKS, ...MARGIN_STOCKS];
 const WATCHLIST = ['BRK.B', ...STOCKS]; // brk.b = nyse
 const QUANTITY_STEP = 5; // open slowly // close ALL right away
+// todo: if want to switch cash/margin stocks, need to manually close first
 
+// most active trading time => more accurate supply/demand
 const START = 8; // start trading hour
 const END = 10; // end trading hour
 const INTERVAL = 30; // 30 minutes => 3hrs x 2 = 6 checks daily
@@ -35,7 +37,7 @@ function isNotRoundTrip(stock) {
     }
 }
 
-const MIN_DESIRED_PROFIT = 10; // => close position when reverse
+const MIN_DESIRED_PROFIT = 10; // => close position when market reverses
 const MAX_DESIRED_PROFIT = 50; // => close position
 function hasPositionReachedDesiredProfit(stock, reverse=false) {
     const desiredProfit = reverse ? MIN_DESIRED_PROFIT : MAX_DESIRED_PROFIT;
@@ -46,7 +48,7 @@ function hasPositionReachedDesiredProfit(stock, reverse=false) {
     }
 }
 
-const MIN_STOP_LOSS = 50; // => close position when reverse
+const MIN_STOP_LOSS = 50; // => close position when market reverses
 const MAX_STOP_LOSS = 100; // => close position
 function hasPositionReachedStopLoss(stock, reverse=false) {
     const stopLoss = reverse ? MIN_STOP_LOSS : MAX_STOP_LOSS;
@@ -57,7 +59,7 @@ function hasPositionReachedStopLoss(stock, reverse=false) {
     }
 }
 
-// total = 3x // 60
+// total = 3x // < 100
 const MAX_QUANTITY = 10; // opening max quantity
 const MAX_CASH_QUANTITY = 30;
 const MAX_MARGIN_QUANTITY = 20;
@@ -119,7 +121,7 @@ function bearMarketMarginTrade(account, stock) {
     }
 }
 
-// reverse: close long positions
+// market reverses: close long positions
 function bearMarketCashTrade(stock) {
     if (stock.position && isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, true) || hasPositionReachedStopLoss(stock, true))) {
         placeMarketOrder('Sell', stock.symbol, stock.position.longQuantity);
@@ -159,7 +161,7 @@ function bullMarketCashTrade(account, stock) {
     }
 }
 
-// reverse: close short positions
+// market reverses: close short positions
 function bullMarketMarginTrade(stock) {
     if (stock.position && isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, true) || hasPositionReachedStopLoss(stock, true))) {
         placeMarketOrder('Cover', stock.symbol, stock.position.shortQuantity);
