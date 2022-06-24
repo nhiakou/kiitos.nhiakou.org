@@ -3,11 +3,13 @@
 
 import { placeMarketOrder } from "../tda.mjs";
 
+// nasdaq quotes level 1 and 2 = $24/month
+// nyse quotes = $45/month
 const INDEXES = ['$DJI', '$SPX.X', '$COMPX'];
-const CASH_STOCKS = ['AAPL'];
-const MARGIN_STOCKS = ['SQ', 'ABNB'];
+const CASH_STOCKS = ['AAPL']; // aapl = nasdaq
+const MARGIN_STOCKS = ['SQ', 'ABNB']; // abnb = nasdaq; sq = nyse
 const STOCKS = [...CASH_STOCKS, ...MARGIN_STOCKS];
-const WATCHLIST = ['BRK.B', ...STOCKS];
+const WATCHLIST = ['BRK.B', ...STOCKS]; // brk.b = nyse
 const QUANTITY_STEP = 5; // open slowly // close ALL right away
 
 const START = 8; // start trading hour
@@ -33,29 +35,35 @@ function isNotRoundTrip(stock) {
     }
 }
 
-const MIN_PROFIT = 50; // => close position
-function hasPositionReachedMinProfit(stock) {
+const MIN_DESIRED_PROFIT = 10; // => close position when reverse
+const MAX_DESIRED_PROFIT = 50; // => close position
+function hasPositionReachedDesiredProfit(stock, reverse=false) {
+    const desiredProfit = reverse ? MIN_DESIRED_PROFIT : MAX_DESIRED_PROFIT;
     if (stock.position.shortQuantity) {
-        return (stock.position.averagePrice - stock.mark) * stock.position.shortQuantity >= MIN_PROFIT;
+        return (stock.position.averagePrice - stock.mark) * stock.position.shortQuantity >= desiredProfit;
     } else {
-        return (stock.mark - stock.position.averagePrice) * stock.position.longQuantity >= MIN_PROFIT;
+        return (stock.mark - stock.position.averagePrice) * stock.position.longQuantity >= desiredProfit;
     }
 }
 
-const STOP_LOSS = 100; // => close position
-function hasPositionReachedMaxLoss(stock) {
+const MIN_STOP_LOSS = 50; // => close position when reverse
+const MAX_STOP_LOSS = 100; // => close position
+function hasPositionReachedStopLoss(stock, reverse=false) {
+    const stopLoss = reverse ? MIN_STOP_LOSS : MAX_STOP_LOSS;
     if (stock.position.shortQuantity) {
-        return (stock.mark - stock.position.averagePrice) * stock.position.shortQuantity > STOP_LOSS;
+        return (stock.mark - stock.position.averagePrice) * stock.position.shortQuantity > stopLoss;
     } else {
-        return (stock.position.averagePrice - stock.mark) * stock.position.longQuantity > STOP_LOSS;
+        return (stock.position.averagePrice - stock.mark) * stock.position.longQuantity > stopLoss;
     }
 }
 
-const MAX_QUANTITY = 20; // total = 3x // 60
+// total = 3x // 60
+const MAX_QUANTITY = 10; // opening max quantity
+const MAX_CASH_QUANTITY = 30;
+const MAX_MARGIN_QUANTITY = 20;
 function getAllowQuantity(stock, quantity) {
     if (stock.position) {
-        const currentQuantity = stock.position.shortQuantity || stock.position.longQuantity;
-        const availableQuantity = MAX_QUANTITY - currentQuantity
+        const availableQuantity = stock.position.shortQuantity ? (MAX_MARGIN_QUANTITY - stock.position.shortQuantity) : (MAX_CASH_QUANTITY - stock.position.longQuantity);
         return quantity <= availableQuantity ? quantity : availableQuantity;
     } else {
         return quantity <= MAX_QUANTITY ? quantity : MAX_QUANTITY;
@@ -69,9 +77,11 @@ export { INDEXES, WATCHLIST, STOCKS, MAX_QUANTITY, QUANTITY_STEP, INTERVAL };
 export function kiitos(account, stocks) {
     if (isTradingHour()) {
         if (isBearMarket(stocks)) {
-            MARGIN_STOCKS.forEach(stock => bearMarketTrade(account, stocks[stock]));
+            MARGIN_STOCKS.forEach(stock => bearMarketMarginTrade(account, stocks[stock]));
+            CASH_STOCKS.forEach(stock => bearMarketCashTrade(stocks[stock]));
         } else {
-            CASH_STOCKS.forEach(stock => bullMarketTrade(account, stocks[stock]));
+            CASH_STOCKS.forEach(stock => bullMarketCashTrade(account, stocks[stock]));
+            MARGIN_STOCKS.forEach(stock => bullMarketMarginTrade(stocks[stock]));
         } 
     }
 }
@@ -90,11 +100,11 @@ function hasEnoughMargin(account, stock, quantity) {
 }
 
 // short and cover only
-function bearMarketTrade(account, stock) {
+function bearMarketMarginTrade(account, stock) {
     const quantity = hasEnoughSupply(stock);
 
     if (stock.position) {
-        if (isNotRoundTrip(stock) && (hasPositionReachedMinProfit(stock) || hasPositionReachedMaxLoss(stock))) {
+        if (isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock) || hasPositionReachedStopLoss(stock))) {
             // close short position
             placeMarketOrder('Cover', stock.symbol, stock.position.shortQuantity);
         } else if (quantity && hasEnoughMargin(account, stock, quantity)) {
@@ -106,6 +116,13 @@ function bearMarketTrade(account, stock) {
             // begin short position
             placeMarketOrder('Short', stock.symbol, quantity);
         }
+    }
+}
+
+// reverse: close long positions
+function bearMarketCashTrade(stock) {
+    if (stock.position && isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, true) || hasPositionReachedStopLoss(stock, true))) {
+        placeMarketOrder('Sell', stock.symbol, stock.position.longQuantity);
     }
 }
 
@@ -123,11 +140,11 @@ function hasEnoughCash(account, stock, quantity) {
 }
 
 // buy and sell only
-function bullMarketTrade(account, stock) {
+function bullMarketCashTrade(account, stock) {
     const quantity = hasEnoughDemand(stock);
 
     if (stock.position) {
-        if (isNotRoundTrip(stock) && (hasPositionReachedMinProfit(stock) || hasPositionReachedMaxLoss(stock))) {
+        if (isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock) || hasPositionReachedStopLoss(stock))) {
             // close long position
             placeMarketOrder('Sell', stock.symbol, stock.position.longQuantity);
         } else if (quantity && hasEnoughCash(account, stock, quantity)) {
@@ -142,3 +159,9 @@ function bullMarketTrade(account, stock) {
     }
 }
 
+// reverse: close short positions
+function bullMarketMarginTrade(stock) {
+    if (stock.position && isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, true) || hasPositionReachedStopLoss(stock, true))) {
+        placeMarketOrder('Cover', stock.symbol, stock.position.shortQuantity);
+    }
+}
