@@ -10,13 +10,12 @@ const CASH_STOCKS = ['AAPL']; // aapl = nasdaq
 const MARGIN_STOCKS = ['SQ', 'ABNB']; // abnb = nasdaq; sq = nyse
 const STOCKS = [...CASH_STOCKS, ...MARGIN_STOCKS];
 const WATCHLIST = ['BRK.B', ...STOCKS]; // brk.b = nyse
-const QUANTITY_STEP = 5; // open slowly // close ALL right away
 // todo: if want to switch cash/margin stocks, need to manually close first
 
+const INTERVAL = 15; // 30 minutes => 3hrs x 2 = 6 checks daily
 // most active trading time => more accurate supply/demand
-const START = 8; // start trading hour
-const END = 10; // end trading hour
-const INTERVAL = 30; // 30 minutes => 3hrs x 2 = 6 checks daily
+const START = 7; // start trading hour 8
+const END = 12; // end trading hour 10
 function isTradingHour() {
     const now = new Date();
     return START <= now.getHours() && now.getHours() <= END;
@@ -59,6 +58,7 @@ function hasPositionReachedStopLoss(stock, reverse=false) {
     }
 }
 
+const QUANTITY_STEP = 5; // open slowly // close ALL right away
 // total = 3x // < 100
 const MAX_QUANTITY = 10; // opening max quantity
 const MAX_CASH_QUANTITY = 30;
