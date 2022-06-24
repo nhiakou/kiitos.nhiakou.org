@@ -1,21 +1,15 @@
 import { CASH_STOCKS, MARGIN_STOCKS } from "./stocks.mjs";
 import { placeMarketOrder } from "../tda.mjs";
 
-const LEVEL = 0; // increase when have stable track record
-
-const INTERVAL = 15; // 30 minutes => 3hrs x 2 = 6 checks daily
+const INTERVAL = 15; // 15 minutes => 2hrs x 4 = 8 checks per day
 // most active trading time => more accurate supply/demand
-const START = 7; // start trading hour 8
-const END = 12; // end trading hour 10
+// same day trading => 7 - 9
+// inter day trading => 8 - 10
+const START = 8; // start trading hour 8
+const END = 10; // end trading hour 10
 function isTradingHour() {
     const now = new Date();
     return START <= now.getHours() && now.getHours() <= END;
-}
-
-const BEAR_CONDITION = 2; // supply / demand
-function isBearMarket(stocks) {
-    const market = stocks['BRK.B'];
-    return market.askSize / market.bidSize > BEAR_CONDITION;
 }
 
 const DAY_RULE = 12*60*60*1000; // day trader rule = at least 12 hours have passed
@@ -27,8 +21,29 @@ function isNotRoundTrip(stock) {
     }
 }
 
-const MIN_DESIRED_PROFIT = 10; // => close position when market reverses
-const MAX_DESIRED_PROFIT = 50; // => close position
+const LEVEL = 0.5; 
+/* MECHANICAL RULES
+1. brk DOWN => Bear // Supply/demand
+2. brk UP => Bull // Demand/supply
+3. BEAR => short // Supply/demand
+4. BULL => long // Demand/supply
+
+// BOTTOM 25%
+- $100 per day
+- $500 per week
+- $2K per month
+- $26K per year (260*100)
+// TOP 10%
+- $20K cash => $1k/day => $200K/year
+
+LEVELS
+- level: 1 - 10
+- quantity: 10 - 100
+- profit/day: $100 - $1000
+*/
+
+const MIN_DESIRED_PROFIT = 20*LEVEL; // => $10 close position when market reverses
+const MAX_DESIRED_PROFIT = 100*LEVEL; // => $50 close position
 function hasPositionReachedDesiredProfit(stock, reverse=false) {
     const desiredProfit = reverse ? MIN_DESIRED_PROFIT : MAX_DESIRED_PROFIT;
     if (stock.position.shortQuantity) {
@@ -38,8 +53,8 @@ function hasPositionReachedDesiredProfit(stock, reverse=false) {
     }
 }
 
-const MIN_STOP_LOSS = 50; // => close position when market reverses
-const MAX_STOP_LOSS = 100; // => close position
+const MIN_STOP_LOSS = 100*LEVEL; // $50 => close position when market reverses
+const MAX_STOP_LOSS = 200*LEVEL; // $100 => close position
 function hasPositionReachedStopLoss(stock, reverse=false) {
     const stopLoss = reverse ? MIN_STOP_LOSS : MAX_STOP_LOSS;
     if (stock.position.shortQuantity) {
@@ -49,11 +64,11 @@ function hasPositionReachedStopLoss(stock, reverse=false) {
     }
 }
 
-const QUANTITY_STEP = 5; // open slowly // close ALL right away
+const QUANTITY_STEP = 10*LEVEL; // 5 open slowly // close ALL right away
 // total = 3x // < 100
-const MAX_QUANTITY = 10; // opening max quantity
-const MAX_CASH_QUANTITY = 30;
-const MAX_MARGIN_QUANTITY = 20;
+const MAX_QUANTITY = 20*LEVEL; // 10 opening max quantity
+const MAX_CASH_QUANTITY = 60*LEVEL; // 30
+const MAX_MARGIN_QUANTITY = 40*LEVEL; // 20
 function getAllowQuantity(stock, quantity) {
     if (stock.position) {
         const availableQuantity = stock.position.shortQuantity ? (MAX_MARGIN_QUANTITY - stock.position.shortQuantity) : (MAX_CASH_QUANTITY - stock.position.longQuantity);
@@ -66,6 +81,12 @@ function getAllowQuantity(stock, quantity) {
 export { MAX_QUANTITY, QUANTITY_STEP, INTERVAL };
 
 // KIITOS
+
+const BEAR_CONDITION = 2; // supply / demand
+function isBearMarket(stocks) {
+    const market = stocks['BRK.B'];
+    return market.askSize / market.bidSize > BEAR_CONDITION;
+}
 
 export function kiitos(account, stocks) {
     if (isTradingHour()) {
