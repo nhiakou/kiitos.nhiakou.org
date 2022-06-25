@@ -7,6 +7,7 @@
             import { MAX_QUANTITY, QUANTITY_STEP } from '../robot/brain.mjs';
             import { confirmMarketOrder } from '../tda.mjs';
             import { renderOrders } from "./admin.mjs";
+            import { openStream, closeStream } from './stream.mjs';
 
             let orders = null;
             const range = document.getElementById('range-quantity');
@@ -44,6 +45,18 @@
                 const input = Object.fromEntries(new FormData(event.target));
                 await confirmMarketOrder(input.order, input.symbol, input.quantity);
             }
+
+            window.openStream = button => {
+                document.getElementById('close').disabled = false;
+                button.disabled = true;
+                openStream();
+            }
+
+            window.closeStream = button => {
+                document.getElementById('open').disabled = false;
+                button.disabled = true;
+                closeStream();
+            }
         </script>
         <style>
             body {
@@ -62,6 +75,7 @@
 
             ol {
                 overflow: scroll;
+                margin: 0;
             }
 
             #test {
@@ -69,6 +83,16 @@
                 padding: 3px 8px;
                 border-radius: 10%;
                 font-weight: bold;
+            }
+
+            footer section:first-child {
+                background-color: lightgoldenrodyellow;
+                padding: 15px;
+            }
+
+            footer section:last-child {
+                background-color: lightblue;
+                padding: 15px;
             }
         </style>
     </head>
@@ -114,9 +138,18 @@
                 </form>
             </fieldset>
         </main>
+        <br>
         <footer>
-            <ol></ol>
-            <button onclick="deleteAll(this)">Delete All</button>
+            <section>
+                <ol></ol>
+                <button onclick="deleteAll(this)">Delete All</button>
+            </section>
+            <br>
+            <section>
+                <ol></ol>
+                <button id="open" onclick="openStream(this)">Open Stream</button>
+                <button id="close" onclick="closeStream(this)" disabled>Close Stream</button>
+            </section>
         </footer>
     </body>
 </html>
