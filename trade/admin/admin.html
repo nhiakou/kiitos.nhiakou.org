@@ -6,8 +6,8 @@
             import { getData, deleteOrder } from "/login/fetch.mjs";
             import { MAX_QUANTITY, QUANTITY_STEP } from '../robot/brain.mjs';
             import { confirmMarketOrder } from '../tda.mjs';
-            import { renderOrders } from "./admin.mjs";
-            import { openStream, closeStream } from './stream.mjs';
+            import { renderOrders } from "./orders.mjs";
+            import { openStream, closeStream } from './streams.mjs';
 
             let orders = null;
             const range = document.getElementById('range-quantity');
@@ -87,12 +87,23 @@
 
             footer section:first-child {
                 background-color: lightgoldenrodyellow;
-                padding: 15px;
+                padding: 1px 15px 15px;
             }
 
             footer section:last-child {
                 background-color: lightblue;
-                padding: 15px;
+                padding: 1px 15px 15px;
+            }
+
+            footer nav {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            h1 {
+                text-align: center;
             }
         </style>
     </head>
@@ -141,14 +152,24 @@
         <br>
         <footer>
             <section>
-                <ol></ol>
-                <button onclick="deleteAll(this)">Delete All</button>
+                <nav>
+                    <h2>Orders</h2>
+                    <aside>
+                        <button onclick="deleteAll(this)">Delete All</button>
+                    </aside>
+                </nav>
+                <ol id="orders" reversed></ol>
             </section>
-            <br>
+            <h1 id="heartbeat"></h1>
             <section>
-                <ol></ol>
-                <button id="open" onclick="openStream(this)">Open Stream</button>
-                <button id="close" onclick="closeStream(this)" disabled>Close Stream</button>
+                <nav>
+                    <h2>Streams</h2>
+                    <aside>
+                        <button id="open" onclick="openStream(this)">Open Stream</button>
+                        <button id="close" onclick="closeStream(this)" disabled>Close Stream</button>
+                    </aside>
+                </nav>
+                <ol id="streams" reversed></ol>
             </section>
         </footer>
     </body>

@@ -1,6 +1,6 @@
 import { WATCHLIST } from "./stocks.mjs";
 import { formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
-import { sendMail } from '../admin/admin.mjs';
+import { sendMail } from '../admin/mail.mjs';
 
 export function sendAlert(stocks) {
     WATCHLIST.forEach(stock => {

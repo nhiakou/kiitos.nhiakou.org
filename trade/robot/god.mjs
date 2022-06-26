@@ -15,10 +15,11 @@ export async function analyzeStocks() {
 }
 
 export function isMarketOpen(market) {
-   if (market.equity.EQ.isOpen && market.equity.EQ.sessionHours) {
+   const equityMarket = market.equity.EQ || market.equity.equity;
+   if (equityMarket.isOpen && equityMarket.sessionHours) {
        const now = new Date();
-       const start = new Date(market.equity.EQ.sessionHours.regularMarket[0].start);
-       const end = new Date(market.equity.EQ.sessionHours.regularMarket[0].end);
+       const start = new Date(equityMarket.sessionHours.regularMarket[0].start);
+       const end = new Date(equityMarket.sessionHours.regularMarket[0].end);
        return start <= now && now <= end;
    } else {
        return false;

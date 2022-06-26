@@ -1,7 +1,7 @@
 import { ALL } from "./robot/stocks.mjs";
 import { getTDA as getAccount } from "/account/tda.mjs"; 
 import { getData, postData } from "/login/fetch.mjs";
-import { sendMail } from "./admin/admin.mjs";
+import { sendMail } from "./admin/mail.mjs";
 
 export async function getTDA() {
     const { account, history } = await getAccount();
@@ -14,7 +14,7 @@ export async function getTDA() {
         stocks[stock].lastTrade = history.find(trade => trade.transactionItem.instrument.symbol === stock);
     }
 
-    //console.log(account)
+    console.log(account) // sometimes cannot get account because of access denied... why?
     //console.log(stocks)
     return { account, market, stocks };
 }
