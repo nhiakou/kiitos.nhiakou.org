@@ -1,7 +1,7 @@
 import { getData } from "/login/fetch.mjs";
 
 export async function renderOrders() {
-    const orders = await getData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/savedorders`);
+    const orders = await getData('corporate', `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/savedorders`);
     const ol = document.getElementById('orders');
 
     orders.reverse().forEach(order => {

@@ -5,7 +5,7 @@ import { renderAccount } from './render/account.mjs';
 import { renderSummary } from './render/summary.mjs';
 
 window.onload = async () => {
-  if (hasExpired(localStorage.getItem('refresh_last_update'), localStorage.getItem('refresh_token_expires_in'))) {
+  if (hasExpired(localStorage.getItem('corporate-refresh_last_update'), localStorage.getItem('corporate-refresh_token_expires_in'))) {
     window.location.href = '/index.html';
   } else {
     localStorage.setItem('test', localStorage.getItem('test') || 1);

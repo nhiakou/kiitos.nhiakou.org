@@ -1,6 +1,7 @@
 // free = 15 minutes delay (not real-time)
 // nasdaq quotes level 1 and 2 = $24/month // level 2 = order books
 // nyse quotes = $45/month
+// total: $69/month
 const INDEXES = ['$DJI', '$SPX.X', '$COMPX'];
 const CASH_STOCKS = ['AAPL']; // aapl = nasdaq
 const MARGIN_STOCKS = ['SQ', 'ABNB']; // abnb = nasdaq; sq = nyse

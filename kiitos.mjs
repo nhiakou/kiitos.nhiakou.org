@@ -4,7 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import fetch from 'node-fetch';
 import puppeteer from 'puppeteer';
-import { cert, key, client_id, redirect_uri } from './login/private/credentials.mjs';
+import { cert, key, credentials } from './login/private/credentials.mjs';
 
 const bot = express();
 bot.use(cors());
@@ -12,14 +12,14 @@ bot.use(express.json());
 bot.use(express.urlencoded({ extended: true })); 
 
 bot.get('/', async (req, res) => {
-    res.json(JSON.parse(await fs.readFile('login/private/credentials.json')));
+    res.json({personal: JSON.parse(await fs.readFile('login/private/personal.credentials.json')), corporate: JSON.parse(await fs.readFile('login/private/corporate.credentials.json'))});
 });
 
 bot.post('/login', async (req, res) => {
     const browser = await puppeteer.launch({ headless: true, devtools: false });
     // Page: TDA Login
     const page = await browser.newPage();
-    await page.goto(`https://auth.tdameritrade.com/auth?response_type=code&redirect_uri=${encodeURI(redirect_uri)}&client_id=${client_id}%40AMER.OAUTHAP`);
+    await page.goto(`https://auth.tdameritrade.com/auth?response_type=code&redirect_uri=${encodeURI(credentials[req.body.account].redirect_uri)}&client_id=${credentials[req.body.account].client_id}%40AMER.OAUTHAP`);
     await page.type('#username0', req.body.username);
     await page.type('#password1', req.body.password);
     await page.click('#accept');
@@ -29,13 +29,14 @@ bot.post('/login', async (req, res) => {
     await page.click('#accept');
     await page.waitForSelector('#stepup_authorization0');
     await page.click('#accept');
-    // Page: /auth
+    // Page: /personal and /corporate
     await page.waitForSelector('pre');
     const tokens = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
+    //tokens.account_type = (await page.url()).split('/')[3];
     await page.close();
     await browser.close();
     tokens.mailgun_key = req.body.mail;
-    res.json(await saveTokens(tokens));
+    res.json(await saveTokens(req.body.account, tokens));
 });
 
 bot.get('/auth', async (req, res) => {
@@ -46,21 +47,21 @@ bot.get('/auth', async (req, res) => {
             'grant_type': 'authorization_code',
             'access_type': 'offline',
             'code': req.query.code, 
-            'client_id': client_id + '@AMER.OAUTHAP',
-            'redirect_uri': redirect_uri
+            'client_id': credentials[req.query.account].client_id + '@AMER.OAUTHAP',
+            'redirect_uri': credentials[req.query.account].redirect_uri
         })
     });
 
     res.json(await response.json());
 });
 
-async function saveTokens(tokens) {
+async function saveTokens(account, tokens) {
     // { access_token, refresh_token, scope, expires_in, refresh_token_expires_in, token_type }
-    tokens.client_id = client_id;
+    tokens.client_id = credentials[account].client_id;
     tokens.account_id = await getAccountID(tokens.access_token);
     tokens.access_last_update = new Date().toString();
     tokens.refresh_last_update = new Date().toString();
-    await fs.writeFile('login/private/credentials.json', JSON.stringify(tokens));
+    await fs.writeFile(`login/private/${account}.credentials.json`, JSON.stringify(tokens));
     return tokens;
 }
 

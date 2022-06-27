@@ -112,7 +112,7 @@ export async function openStream() {
                 "source": loginRequest.source,
                 "parameters": {
                     keys: stocks,
-                    fields: "0,1,2,3"
+                    fields: [...Array(3).keys()].join(",")
                 }
             },
             {
@@ -123,7 +123,7 @@ export async function openStream() {
                 "source": loginRequest.source,
                 "parameters": {
                     keys: stocks,
-                    fields: "0,1,2,3"
+                    fields: [...Array(3).keys()].join(",")
                 }
             }
         ]
@@ -171,7 +171,7 @@ async function getLoginRequest() {
 }
 
 async function getUserPrincipals() {
-    const user = await getData('https://api.tdameritrade.com/v1/userprincipals', { fields: 'streamerSubscriptionKeys,streamerConnectionInfo' });
+    const user = await getData('personal', 'https://api.tdameritrade.com/v1/userprincipals', { fields: 'streamerSubscriptionKeys,streamerConnectionInfo' });
     return user;
 }
 

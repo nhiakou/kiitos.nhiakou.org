@@ -2,11 +2,22 @@ const KIITOS = navigator.userAgent.includes('Nexus 5'); // Nexus 5 Build/MRA58N
 const LIVE = window.location.hostname === 'kiitos.nhiakou.org';
 export { KIITOS, LIVE };
 
-export async function postData(url = '', data = {}) {
+export async function getData(account, url='', data={}) {
+    const response = await fetch(url + '?' + new URLSearchParams(data), {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + await getAccessToken(account)
+        }
+    });
+    
+    return response.json();
+}
+
+export async function postData(url='', data={}) {
     const response = await fetch(url, {
         method: 'POST', 
         headers: {
-        'Authorization': 'Bearer ' + await getAccessToken(), 
+        'Authorization': 'Bearer ' + await getAccessToken('corporate'), 
         'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
@@ -15,22 +26,11 @@ export async function postData(url = '', data = {}) {
     return response.text();
 }
 
-export async function getData(url='', data = {}) {
-    const response = await fetch(url + '?' + new URLSearchParams(data), {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + await getAccessToken()
-        }
-    });
-    
-    return response.json();
-}
-
 export async function deleteOrder(orderID) {
-    const response = await fetch(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/savedorders/${orderID}`, {
+    const response = await fetch(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/savedorders/${orderID}`, {
         method: 'DELETE',
         headers: {
-            'Authorization': 'Bearer ' + await getAccessToken()
+            'Authorization': 'Bearer ' + await getAccessToken('corporate')
         }
     });
     
@@ -38,11 +38,11 @@ export async function deleteOrder(orderID) {
 }
 
 // access token expires after 1800 seconds = 30 mins
-async function getAccessToken() {
-    if (hasExpired(localStorage.getItem('access_last_update'), localStorage.getItem('expires_in'))) {
-        return await resetAccessToken();
+async function getAccessToken(account) {
+    if (hasExpired(localStorage.getItem(account + '-access_last_update'), localStorage.getItem(account + '-expires_in'))) {
+        return await resetAccessToken(account);
     } else {
-        return localStorage.getItem('access_token');
+        return localStorage.getItem(account + '-access_token');
     }
 }
 
@@ -53,19 +53,19 @@ export function hasExpired(date, expiration) {
         return true;
 }
 
-async function resetAccessToken() {
+async function resetAccessToken(account) {
     const response = await fetch('https://api.tdameritrade.com/v1/oauth2/token', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: new URLSearchParams({
             grant_type: 'refresh_token',
-            refresh_token: localStorage.getItem('refresh_token'),
-            client_id: localStorage.getItem('client_id')
+            refresh_token: localStorage.getItem(account + '-refresh_token'),
+            client_id: localStorage.getItem(account + '-client_id')
         })
     });
 
     const token = await response.json();
-    localStorage.setItem('access_token', token.access_token);
-    localStorage.setItem('access_last_update', new Date().toString());
+    localStorage.setItem(account + '-access_token', token.access_token);
+    localStorage.setItem(account + '-access_last_update', new Date().toString());
     return token.access_token;
 }

@@ -9,22 +9,42 @@
     </head>
     <body>
         <header>
-            <h1>Login</h1>
+            <h1>TDA Login</h1>
         </header>
         <main>
             <fieldset>
-                <legend>TDA Account</legend>
-                <label>Username:</label>
-                <input id="username" type="text" autocomplete="username">
-                <br><br>
-                <label for="password">Password:</label>
-                <input id="password" type="password" autocomplete="current-password">
-                <br><br>
-                <label for="mail">MailGun:</label>
-                <input id="mail" type="password" autocomplete="off">           
-                <br><br>
-                <input id="remember" type="checkbox" onchange="remember()"> 
-                <label for="remember">Remember Me</label>
+                <legend>Personal</legend>
+                <br>
+                <form>
+                    <label for="personal-username">Username:</label>
+                    <input id="personal-username" type="text" autocomplete="off">
+                    <br><br>
+                    <label for="personal-password">Password:</label>
+                    <input id="personal-password" type="password" autocomplete="current-password">
+                </form>
+            </fieldset>
+            <br>
+            <fieldset>
+                <legend>Corporate</legend>
+                <br>
+                <form>
+                    <label for="corporate-username">Username:</label>
+                    <input id="corporate-username" type="text" autocomplete="off">
+                    <br><br>
+                    <label for="corporate-password">Password:</label>
+                    <input id="corporate-password" type="password" autocomplete="current-password">
+                </form>
+            </fieldset>
+            <br>
+            <fieldset>
+                <br>
+                <form>
+                    <label for="mail">MailGun:</label>
+                    <input id="mail" type="password" autocomplete="off">           
+                    <br><br>
+                    <input id="remember" type="checkbox" onchange="rememberMe()"> 
+                    <label for="remember">Remember Me</label>
+                </form>
             </fieldset>
         </main>
         <footer>

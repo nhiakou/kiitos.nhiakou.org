@@ -1,7 +1,9 @@
 import { LIVE, hasExpired } from "./fetch.mjs";
 
-const username = document.getElementById('username');
-const password = document.getElementById('password');
+const personal_username = document.getElementById('personal-username');
+const personal_password = document.getElementById('personal-password');
+const corporate_username = document.getElementById('corporate-username');
+const corporate_password = document.getElementById('corporate-password');
 const mail = document.getElementById('mail');
 const remember = document.getElementById('remember');
 
@@ -10,8 +12,10 @@ window.onload = () => {
     document.getElementById('renew').disabled = LIVE;
 
     if (hasExpired(localStorage.getItem('refresh_last_update'), localStorage.getItem('refresh_token_expires_in'))) {
-        username.value = localStorage.getItem('username') || "";
-        password.value = localStorage.getItem('password') || "";
+        personal_username.value = localStorage.getItem('personal-username') || "";
+        personal_password.value = localStorage.getItem('personal-password') || "";
+        corporate_username.value = localStorage.getItem('corporate-username') || "";
+        corporate_password.value = localStorage.getItem('corporate-password') || "";
         mail.value = localStorage.getItem('mailgun_key') || "";
         remember.checked = Boolean(Number(localStorage.getItem('remember')));
     } else {
@@ -19,56 +23,69 @@ window.onload = () => {
     }
 }
 
-window.remember = () => {
+window.rememberMe = () => {
     localStorage.setItem('remember', remember.checked ? 1 : 0);
 }
 
 window.login = async (button) => {
     if (remember.checked) {
-        localStorage.setItem('username', username.value);
-        localStorage.setItem('password', password.value);
+        localStorage.setItem('personal-username', personal_username.value);
+        localStorage.setItem('personal-password', personal_password.value);
+        localStorage.setItem('corporate-username', corporate_username.value);
+        localStorage.setItem('corporate-password', corporate_password.value);
     } else {
-        localStorage.setItem('username', "");
-        localStorage.setItem('password', "");
+        localStorage.setItem('personal-username', "");
+        localStorage.setItem('personal-password', "");
+        localStorage.setItem('corporate-username', "");
+        localStorage.setItem('corporate-password', "");
     }
 
     button.disabled = true;
     button.textContent = "Please approve on your mobile device";
 
-    const response = await fetch('https://dns.nhiakou.org:999/login', {
-        method: 'POST',
-        mode: 'cors',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            username: username.value, 
-            password: password.value, 
-            mail: mail.value
-        })
-    });
-      
-    setTokens(await response.json())
+    const [ personal, corporate ] = await Promise.allSettled([getTokens('personal'), getTokens('corporate')]);
+    setTokens('personal', personal.value);
+    setTokens('corporate', corporate.value);
     window.location.href = '/account/account.html';
 }
 
 window.copyTokens = async (button) => {
     button.disabled = true;
     const response = await fetch('https://dns.nhiakou.org:999/');
-    setTokens(await response.json());
+    const { personal, corporate } = await response.json();
+    setTokens('personal', personal);
+    setTokens('corporate', corporate);
     window.location.href = '/account/account.html';
 }
 
-function setTokens(tokens) {
-    localStorage.setItem('mailgun_key', tokens.mailgun_key);
-    localStorage.setItem('client_id', tokens.client_id);
-    localStorage.setItem('account_id', tokens.account_id);
-    localStorage.setItem('access_token', tokens.access_token);
-    localStorage.setItem('refresh_token', tokens.refresh_token);
-    localStorage.setItem('scope', tokens.scope);
-    localStorage.setItem('expires_in', tokens.expires_in);
-    localStorage.setItem('refresh_token_expires_in', tokens.refresh_token_expires_in);
-    localStorage.setItem('token_type', tokens.token_type);
-    localStorage.setItem('access_last_update', tokens.access_last_update);
-    localStorage.setItem('refresh_last_update', tokens.refresh_last_update);
+function setTokens(account, tokens) {
+    localStorage.setItem(account + '-mailgun_key', tokens.mailgun_key); // repeat 2x
+    localStorage.setItem(account + '-client_id', tokens.client_id);
+    localStorage.setItem(account + '-account_id', tokens.account_id);
+    localStorage.setItem(account + '-access_token', tokens.access_token);
+    localStorage.setItem(account + '-refresh_token', tokens.refresh_token);
+    localStorage.setItem(account + '-scope', tokens.scope);
+    localStorage.setItem(account + '-expires_in', tokens.expires_in);
+    localStorage.setItem(account + '-refresh_token_expires_in', tokens.refresh_token_expires_in);
+    localStorage.setItem(account + '-token_type', tokens.token_type);
+    localStorage.setItem(account + '-access_last_update', tokens.access_last_update);
+    localStorage.setItem(account + '-refresh_last_update', tokens.refresh_last_update);
+}
+
+async function getTokens(account) {
+    const response = await fetch('https://dns.nhiakou.org:999/login', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            account: account,
+            username: document.getElementById(account + '-username').value, 
+            password: document.getElementById(account + '-password').value,
+            mail: mail.value
+        })
+    });
+
+    return response.json();
 }
 
 window.dataLayer = window.dataLayer || [];

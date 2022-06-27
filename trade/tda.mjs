@@ -5,9 +5,9 @@ import { sendMail } from "./admin/mail.mjs";
 
 export async function getTDA() {
     const { account, history } = await getAccount();
-    const market = await getData('https://api.tdameritrade.com/v1/marketdata/EQUITY/hours', { date: new Date().toISOString() });
-    const stocks = await getData('https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: ALL.join(",") });
-    const positions = await getData('https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('account_id'), { fields: 'positions' });
+    const market = await getData('personal', 'https://api.tdameritrade.com/v1/marketdata/EQUITY/hours', { date: new Date().toISOString() });
+    const stocks = await getData('personal', 'https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: ALL.join(",") });
+    const positions = await getData('corporate', 'https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('corporate-account_id'), { fields: 'positions' });
 
     for (const stock in stocks) {
         stocks[stock].position = positions.securitiesAccount.positions.find(position => position.instrument.symbol === stock);
@@ -46,7 +46,7 @@ export async function placeMarketOrder(order, symbol, quantity) {
 
 // buy long
 async function openLongPosition(symbol, quantity) {
-    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/${ Number(localStorage.getItem('test')) ? 'savedorders': 'orders' }`, {
+    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/${ Number(localStorage.getItem('test')) ? 'savedorders': 'orders' }`, {
         "orderType": "MARKET",
         "session": "NORMAL",
         "duration": "DAY",
@@ -68,7 +68,7 @@ async function openLongPosition(symbol, quantity) {
 
 // sell long
 async function closeLongPosition(symbol, quantity) {
-    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/${ Number(localStorage.getItem('test')) ? 'savedorders': 'orders' }`, {
+    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/${ Number(localStorage.getItem('test')) ? 'savedorders': 'orders' }`, {
         "orderType": "MARKET",
         "session": "NORMAL",
         "duration": "DAY",
@@ -90,7 +90,7 @@ async function closeLongPosition(symbol, quantity) {
 
 // sell short (borrow)
 async function openShortPosition(symbol, quantity) {
-    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/${ Number(localStorage.getItem('test')) ? 'savedorders': 'orders' }`, {
+    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/${ Number(localStorage.getItem('test')) ? 'savedorders': 'orders' }`, {
         "orderType": "MARKET",
         "session": "NORMAL",
         "duration": "DAY",
@@ -112,7 +112,7 @@ async function openShortPosition(symbol, quantity) {
 
 // buy to cover (return)
 async function closeShortPosition(symbol, quantity) {
-    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('account_id')}/${ Number(localStorage.getItem('test')) ? 'savedorders': 'orders' }`, {
+    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/${ Number(localStorage.getItem('test')) ? 'savedorders': 'orders' }`, {
         "orderType": "MARKET",
         "session": "NORMAL",
         "duration": "DAY",

@@ -18,7 +18,7 @@ window.stopAnalyzing = button => {
 }
 
 window.onload = async () => {
-    if (hasExpired(localStorage.getItem('refresh_last_update'), localStorage.getItem('refresh_token_expires_in'))) {
+    if (hasExpired(localStorage.getItem('personal-refresh_last_update'), localStorage.getItem('personal-refresh_token_expires_in')) || hasExpired(localStorage.getItem('corporate-refresh_last_update'), localStorage.getItem('corporate-refresh_token_expires_in'))) {
         window.location.href = '/index.html';
     } else {
         localStorage.setItem('market', localStorage.getItem('market') || 0);
