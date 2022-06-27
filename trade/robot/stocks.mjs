@@ -9,5 +9,7 @@ const STOCKS = [...CASH_STOCKS, ...MARGIN_STOCKS];
 const WATCHLIST = ['BRK.B', ...STOCKS]; // brk.b = nyse
 const ALL = ['BRK.A', ...INDEXES, ...WATCHLIST];
 // todo: if want to switch cash/margin stocks, need to manually close first
+const NASDAQ = ['AAPL', 'ABNB'];
+const NYSE = ['BRK.B', 'SQ'];
 
-export { INDEXES, CASH_STOCKS, MARGIN_STOCKS, STOCKS, WATCHLIST, ALL};
+export { INDEXES, CASH_STOCKS, MARGIN_STOCKS, STOCKS, WATCHLIST, ALL, NASDAQ, NYSE};

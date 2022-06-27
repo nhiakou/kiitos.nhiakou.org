@@ -1,6 +1,7 @@
 import os from 'os';
 
-console.log(os.networkInterfaces().en0[0].address); // => create dns A record
+console.log(os.networkInterfaces().en0[0].address); 
+// => create dns A record
 // host -a dns.nhiakou.org
 // dig dns.nhiakou.org
 // https://toolbox.googleapps.com/apps/dig/#A/_acme-challenge.dns.nhiakou.org

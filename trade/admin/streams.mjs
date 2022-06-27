@@ -1,38 +1,50 @@
 import { getData } from "/login/fetch.mjs";
-import { WATCHLIST } from "../robot/stocks.mjs";
+import { WATCHLIST, NASDAQ, NYSE } from "../robot/stocks.mjs";
 
-function renderStreams(stream) {
+function handleStreams(stream) {
     if (stream.notify) {
         document.getElementById('heartbeat').textContent = new Date(Number(stream.notify[0].heartbeat)).toLocaleString();
     } else if (stream.response) {
         handleResponse(stream.response[0]);
+    } else if (stream.data) {
+        renderResponse(stream.data);
+    } else {
+        console.log(stream);
+    }
+    //console.log(stream);
+}
 
+function renderResponse(response) {
+    response.forEach(stock => {
         const li = document.createElement('li');
         const ul = document.createElement('ul');
         document.getElementById('streams').prepend(li);
         li.append(ul);
         
-        for (const prop in stream.response[0]) {
+        for (const prop in stock) {
             const li = document.createElement('li');
             const b = document.createElement('b');
             const span = document.createElement('span');
             b.textContent = prop + ": ";
 
             if (prop === 'timestamp') {
-                span.textContent = new Date(stream.response[0].timestamp).toLocaleString();
+                span.textContent = new Date(stock.timestamp).toLocaleString();
             } else if (prop === 'content') {
-                span.textContent = JSON.stringify(stream.response[0].content);
+                console.log(stock.content);
+                span.textContent = JSON.stringify(stock.content);
             } else {
-                span.textContent = stream.response[0][prop];
+                span.textContent = stock[prop];
             }
 
             li.append(b, span);
             ul.append(li);
         }
-    }
+    });
 }
 
 function handleResponse(response) {
+    console.info(response);
+
     if (response.content.code === 3 || response.content.code === 20) {
         openStream();
     } else {
@@ -79,11 +91,11 @@ export async function openStream() {
                 "account": loginRequest.account,
                 "source": loginRequest.source,
                 "parameters": {
-                    "qoslevel": "2"
+                    "qoslevel": "0"
                 }
             },
             {
-                "service": "NEWS_HEADLINE", 
+                "service": "NEWS_HEADLINE",
                 "requestid": 2, 
                 "command": "SUBS", 
                 "account": loginRequest.account,
@@ -111,7 +123,7 @@ export async function openStream() {
                 "account": loginRequest.account,
                 "source": loginRequest.source,
                 "parameters": {
-                    keys: stocks,
+                    keys: NASDAQ.join(","),
                     fields: [...Array(3).keys()].join(",")
                 }
             },
@@ -122,7 +134,7 @@ export async function openStream() {
                 "account": loginRequest.account,
                 "source": loginRequest.source,
                 "parameters": {
-                    keys: stocks,
+                    keys: NYSE.join(",").replace(".", "/"),
                     fields: [...Array(3).keys()].join(",")
                 }
             }
@@ -131,7 +143,7 @@ export async function openStream() {
 
     socket = new WebSocket("wss://" + loginRequest.streamerSocketUrl + "/ws");
     socket.onopen = event => socket.send(JSON.stringify(dataRequests));
-    socket.onmessage = event => renderStreams(JSON.parse(event.data));
+    socket.onmessage = event => handleStreams(JSON.parse(event.data));
     socket.onclose = event => document.getElementById('heartbeat').style.color = 'red';
     socket.onerror = event => console.error(event);
 }

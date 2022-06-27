@@ -5,7 +5,10 @@
   "main": "kiitos.mjs",
   "scripts": {
     "start": "sudo nodemon kiitos.mjs",
-    "test": "",
+    "test": "node login/get.ip.address.mjs",
+    "renew": "sudo certbot --manual --preferred-challenges dns certonly -d dns.nhiakou.org",
+    "copy1": "sudo cp /etc/letsencrypt/live/dns.nhiakou.org/fullchain.pem /Users/heartbank/Desktop/HeartBank®/Nhia\\ Kou\\ LLC/nhiakou.org/kiitos.nhiakou.org",
+    "copy2": "sudo cp /etc/letsencrypt/live/dns.nhiakou.org/privkey.pem /Users/heartbank/Desktop/HeartBank®/Nhia\\ Kou\\ LLC/nhiakou.org/kiitos.nhiakou.org",
     "build1": "browserify libraries/LST.mjs -p esmify --s LST > libraries/LST.min.js",
     "build2": "browserify libraries/Astro.js --s Astro > libraries/Astro.min.js"
   },

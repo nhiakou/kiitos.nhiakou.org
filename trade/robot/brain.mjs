@@ -1,10 +1,11 @@
 import { CASH_STOCKS, MARGIN_STOCKS } from "./stocks.mjs";
 import { placeMarketOrder } from "../tda.mjs";
 
-const INTERVAL = 10; // 15 minutes => 2hrs x 4 = 8 checks per day
+const INTERVAL = 1; // 15 minutes => 2hrs x 4 = 8 checks per day
 // most active trading time => more accurate supply/demand
 // same day trading => 7 - 9
 // inter day trading => 8 - 10
+// later: check at beginning and end of day? => 7-8 & 12-13 ?
 const START = 7; // start trading hour 8
 const END = 13; // end trading hour 10
 function isTradingHour() {

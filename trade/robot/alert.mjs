@@ -58,7 +58,12 @@ export function sendAlert(stocks) {
         1-Year: <b>${formatToDollars(stocks[stock]['52WkLow'])}</b> to <b>${formatToDollars(stocks[stock]['52WkHigh'])}</b>
         `;
 
-        sendMail(subject, message);
+        if (isEvery30Minutes()) sendMail(subject, message);
         
     });
+}
+
+function isEvery30Minutes() {
+    const now = new Date();
+    return now.getMinutes() === 30;
 }
