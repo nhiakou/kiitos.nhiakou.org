@@ -14,7 +14,7 @@ export async function getTDA() {
         stocks[stock].lastTrade = history.find(trade => trade.transactionItem.instrument.symbol === stock);
     }
 
-    //console.log(account) // sometimes cannot get account because of access denied... why?
+    //console.log(account)
     //console.log(stocks)
     return { account, market, stocks };
 }

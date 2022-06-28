@@ -1,9 +1,9 @@
 import { LIVE } from "/login/fetch.mjs";
 import { renderTradePage } from "../render/render.mjs";
 import { sendAlert } from "./alert.mjs";
-import { kiitos } from "./brain.mjs";
+import { kiitos } from "./tao.mjs";
 
-export async function analyzeStocks() {
+export async function god() {
    const data = await renderTradePage();
    console.info(new Date().toLocaleString())
    console.log(data);

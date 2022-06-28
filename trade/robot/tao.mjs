@@ -1,13 +1,13 @@
 import { CASH_STOCKS, MARGIN_STOCKS } from "./stocks.mjs";
 import { placeMarketOrder } from "../tda.mjs";
 
-const INTERVAL = 1; // 15 minutes => 2hrs x 4 = 8 checks per day
+const INTERVAL = 1; 
+// 15 minutes => 2hrs x 4 = 8 checks per day // max > 30 secs
+const START = 7; // start trading hour
+const END = 13; // end trading hour
 // most active trading time => more accurate supply/demand
-// same day trading => 7 - 9
-// inter day trading => 8 - 10
-// later: check at beginning and end of day? => 7-8 & 12-13 ?
-const START = 7; // start trading hour 8
-const END = 13; // end trading hour 10
+// same day trading => 7-9 & 11-13 => most active
+// inter day trading => 9 - 11 => least active
 function isTradingHour() {
     const now = new Date();
     return START <= now.getHours() && now.getHours() <= END;
@@ -43,10 +43,11 @@ LEVELS
 - profit/day: $100 - $1000
 */
 
-const MIN_DESIRED_PROFIT = 20*LEVEL; // => $10 close position when market reverses
-const MAX_DESIRED_PROFIT = 100*LEVEL; // => $50 close position
+const DESIRED_PROFIT = { MIN: 20*LEVEL, MAX: 100*LEVEL };
+// min => $10 close position when market reverses
+// max => $50 close position
 function hasPositionReachedDesiredProfit(stock, reverse=false) {
-    const desiredProfit = reverse ? MIN_DESIRED_PROFIT : MAX_DESIRED_PROFIT;
+    const desiredProfit = reverse ? DESIRED_PROFIT.MIN : DESIRED_PROFIT.MAX;
     if (stock.position.shortQuantity) {
         return (stock.position.averagePrice - stock.mark) * stock.position.shortQuantity >= desiredProfit;
     } else {
@@ -54,10 +55,11 @@ function hasPositionReachedDesiredProfit(stock, reverse=false) {
     }
 }
 
-const MIN_STOP_LOSS = 100*LEVEL; // $50 => close position when market reverses
-const MAX_STOP_LOSS = 200*LEVEL; // $100 => close position
+const STOP_LOSS = { MIN: 100*LEVEL, MAX: 200*LEVEL };
+// min $50 => close position when market reverses
+// max $100 => close position
 function hasPositionReachedStopLoss(stock, reverse=false) {
-    const stopLoss = reverse ? MIN_STOP_LOSS : MAX_STOP_LOSS;
+    const stopLoss = reverse ? STOP_LOSS.MIN : STOP_LOSS.MAX;
     if (stock.position.shortQuantity) {
         return (stock.mark - stock.position.averagePrice) * stock.position.shortQuantity > stopLoss;
     } else {
@@ -65,28 +67,20 @@ function hasPositionReachedStopLoss(stock, reverse=false) {
     }
 }
 
-const QUANTITY_STEP = 10*LEVEL; // 5 open slowly // close ALL right away
+const MAX_QUANTITY = 40*LEVEL; // 20
 // total = 3x // < 100
-const MAX_QUANTITY = 20*LEVEL; // 10 opening max quantity
-const MAX_CASH_QUANTITY = 60*LEVEL; // 30
-const MAX_MARGIN_QUANTITY = 40*LEVEL; // 20
-function getAllowQuantity(stock, quantity) {
-    if (stock.position) {
-        const availableQuantity = stock.position.shortQuantity ? (MAX_MARGIN_QUANTITY - stock.position.shortQuantity) : (MAX_CASH_QUANTITY - stock.position.longQuantity);
-        return quantity <= availableQuantity ? quantity : availableQuantity;
-    } else {
-        return quantity <= MAX_QUANTITY ? quantity : MAX_QUANTITY;
-    }
-}
-
+const QUANTITY_STEP = 10*LEVEL; // 5
+// open slowly // close ALL right away
 export { MAX_QUANTITY, QUANTITY_STEP, INTERVAL };
 
-// KIITOS
+// tao = KIITOS
 
-const BEAR_CONDITION = 2; // supply / demand
+const BEAR_CONDITION = { SP: -1, NQ: -1, BRK: 2 }; 
 function isBearMarket(stocks) {
-    const market = stocks['BRK.B'];
-    return market.askSize / market.bidSize > BEAR_CONDITION;
+    const SP = stocks['$SPX.X'].netPercentChangeInDouble < BEAR_CONDITION.SP; // percent change from yesterday
+    const NQ = stocks['$COMPX'].netPercentChangeInDouble < BEAR_CONDITION.NQ; // percent change from yesterday
+    const BRK = stocks['BRK.B'].askSize / stocks['BRK.B'].bidSize > BEAR_CONDITION.BRK; // supply / demand
+    return SP && NQ && BRK;
 }
 
 export function kiitos(account, stocks) {
@@ -101,12 +95,24 @@ export function kiitos(account, stocks) {
     }
 }
 
-// BEAR
+// yin - BEAR
+
+const MARGIN_QUANTITY = { MIN: 10*LEVEL, MAX: 40*LEVEL };
+// min = 5 starting max quantity
+// max = 20 max quantity
+function getAllowMarginQuantity(stock, quantity) {
+    if (stock.position) {
+        const availableQuantity = MARGIN_QUANTITY.MAX - stock.position.shortQuantity;
+        return quantity <= availableQuantity ? quantity : availableQuantity;
+    } else {
+        return quantity <= MARGIN_QUANTITY.MIN ? quantity : MARGIN_QUANTITY.MIN;
+    }
+}
 
 const SUPPLY_DEMAND = 4; // => open short
 function hasEnoughSupply(stock) {
     const quantity = Math.floor(stock.askSize / stock.bidSize);
-    return quantity > SUPPLY_DEMAND ? getAllowQuantity(stock, quantity) : 0;
+    return quantity > SUPPLY_DEMAND ? getAllowMarginQuantity(stock, quantity) : 0;
 }
 
 const MAX_MARGIN = 0.5; // using only 50% of available margin
@@ -141,12 +147,24 @@ function bearMarketCashTrade(stock) {
     }
 }
 
-// BULL
+// yang = BULL
+
+const CASH_QUANTITY = { MIN: 20*LEVEL, MAX: 60*LEVEL };
+// min = 10 starting max quantity
+// max = 30 max quantity
+function getAllowCashQuantity(stock, quantity) {
+    if (stock.position) {
+        const availableQuantity = CASH_QUANTITY.MAX - stock.position.longQuantity;
+        return quantity <= availableQuantity ? quantity : availableQuantity;
+    } else {
+        return quantity <= CASH_QUANTITY.MIN ? quantity : CASH_QUANTITY.MIN;
+    }
+}
 
 const DEMAND_SUPPLY = 4; // => open long
 function hasEnoughDemand(stock) {
     const quantity = Math.floor(stock.bidSize / stock.askSize);
-    return quantity > DEMAND_SUPPLY ? getAllowQuantity(stock, quantity) : 0;
+    return quantity > DEMAND_SUPPLY ? getAllowCashQuantity(stock, quantity) : 0;
 }
 
 const MAX_CASH = 0.7; // using only 70% of available cash

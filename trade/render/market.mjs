@@ -1,5 +1,5 @@
 import { INDEXES, WATCHLIST } from "../robot/stocks.mjs";
-import { isMarketOpen } from "../robot/god.mjs";
+import { isMarketOpen } from "../robot/buddha.mjs";
 import { formatToDollar, formatToPercent, formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 
 export function renderMarket(market) {

@@ -2,15 +2,14 @@ const KIITOS = navigator.userAgent.includes('Nexus 5'); // Nexus 5 Build/MRA58N
 const LIVE = window.location.hostname === 'kiitos.nhiakou.org';
 export { KIITOS, LIVE };
 
+// sometimes cannot get account because of access denied... why?
 export async function getData(account, url='', data={}) {
-    const response = await fetch(url + '?' + new URLSearchParams(data), {
+    return fetch(url + '?' + new URLSearchParams(data), {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' + await getAccessToken(account)
         }
-    });
-    
-    return response.json();
+    }).then(response => response.json()).catch(error => console.error(error));    
 }
 
 export async function postData(url='', data={}) {

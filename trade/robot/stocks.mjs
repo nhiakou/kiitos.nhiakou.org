@@ -11,5 +11,6 @@ const ALL = ['BRK.A', ...INDEXES, ...WATCHLIST];
 // todo: if want to switch cash/margin stocks, need to manually close first
 const NASDAQ = ['AAPL', 'ABNB'];
 const NYSE = ['BRK.B', 'SQ'];
+// later: allow same stocks in both bear and bull? prob not bc too complex...
 
 export { INDEXES, CASH_STOCKS, MARGIN_STOCKS, STOCKS, WATCHLIST, ALL, NASDAQ, NYSE};

@@ -7,15 +7,15 @@ function handleStreams(stream) {
     } else if (stream.response) {
         handleResponse(stream.response[0]);
     } else if (stream.data) {
-        renderResponse(stream.data);
+        renderStocks(stream.data);
     } else {
         console.log(stream);
     }
     //console.log(stream);
 }
 
-function renderResponse(response) {
-    response.forEach(stock => {
+function renderStocks(stocks) {
+    stocks.forEach(stock => {
         const li = document.createElement('li');
         const ul = document.createElement('ul');
         document.getElementById('streams').prepend(li);
