@@ -1,6 +1,62 @@
 import { getData } from "/login/fetch.mjs";
 
+export async function orderPositions() {
+    const orders = await getOrderWithPrices();
+    const positions = [];
+
+    orders.forEach(order => {
+        const position = positions.find(position => position.stock === order.orderLegCollection[0].instrument.symbol);
+        if (position && !position.closingPrice) {
+            switch (order.orderLegCollection[0].instruction) {
+                case "BUY":
+                    position.longQuantity += order.orderLegCollection[0].quantity;
+                    position.averagePrice = getAveragePrice(position, order);
+                    break;
+                case "SELL":
+                    position.closingPrice = order.price;
+                    break;
+                case "SELL_SHORT":
+                    position.shortQuantity += order.orderLegCollection[0].quantity;
+                    position.averagePrice = getAveragePrice(position, order);
+                    break;
+                case "BUY_TO_COVER":
+                    position.closingPrice = order.price;
+                    break;
+            }
+        } else {
+            const position = {};
+            position.stock = order.orderLegCollection[0].instrument.symbol;
+            position.shortQuantity = order.orderLegCollection[0].instruction === 'SELL_SHORT' ? order.orderLegCollection[0].quantity : 0;
+            position.longQuantity = order.orderLegCollection[0].instruction === 'BUY' ? order.orderLegCollection[0].quantity : 0;
+            position.averagePrice = order.price;
+            position.closingPrice = 0;
+            positions.unshift(position);
+        }
+    });
+
+    return positions;
+}
+
+function getAveragePrice(position, order) {
+    const previousQuantity = position.shortQuantity || position.longQuantity;
+    return Math.round((position.averagePrice*previousQuantity + order.price*order.orderLegCollection[0].quantity) / (previousQuantity + order.orderLegCollection[0].quantity) * 100) / 100;
+}
+
+async function getOrderWithPrices() {
+    const orders = await getData('corporate', `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/savedorders`);
+    const promises = await Promise.allSettled(orders.map(async order => await getOrderWithPrice(order)));
+    return promises.map(promise => promise.value);
+}
+
+async function getOrderWithPrice(order) {
+    const date = new Date(order.savedTime).getTime();
+    const history = await getData('personal', `https://api.tdameritrade.com/v1/marketdata/${order.orderLegCollection[0].instrument.symbol}/pricehistory`, { startDate: date, endDate: date, periodType: "day", frequencyType: "minute", frequency: 60, needExtendedHoursData: false });
+    order.price = Math.round(history.candles.reduce((sum, candle) => sum + candle.close, 0) / history.candles.length * 100) / 100;
+    return order;
+}
+
 export async function renderOrders() {
+    console.log(await orderPositions())
     const orders = await getData('corporate', `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/savedorders`);
     const ol = document.getElementById('orders');
 

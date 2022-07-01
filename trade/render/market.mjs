@@ -24,10 +24,11 @@ export function renderMarket(market) {
 
 export function renderMarkets(stocks) {
     INDEXES.forEach(index => {
-        //console.log(stocks[index])
-        document.getElementById(index).textContent = formatToDollars(stocks[index].lastPrice || stocks[index].closePrice || stocks[index].openPrice);
-        formatToDollar(document.getElementById(index + '-dollar'), stocks[index].netChange);
-        formatToPercent(document.getElementById(index + '-percent'), stocks[index].netPercentChangeInDouble);
+        if (stocks[index]) {
+            document.getElementById(index).textContent = formatToDollars(stocks[index].lastPrice);
+            formatToDollar(document.getElementById(index + '-dollar'), stocks[index].netChange);
+            formatToPercent(document.getElementById(index + '-percent'), stocks[index].netPercentChangeInDouble);
+        }
     });
 
     WATCHLIST.forEach(stock => {
