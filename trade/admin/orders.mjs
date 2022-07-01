@@ -1,7 +1,7 @@
 import { getData } from "/login/fetch.mjs";
 
 export async function orderPositions() {
-    const orders = await getOrderWithPrices();
+    const orders = await getOrdersWithPrices();
     const positions = [];
 
     orders.forEach(order => {
@@ -42,21 +42,29 @@ function getAveragePrice(position, order) {
     return Math.round((position.averagePrice*previousQuantity + order.price*order.orderLegCollection[0].quantity) / (previousQuantity + order.orderLegCollection[0].quantity) * 100) / 100;
 }
 
-async function getOrderWithPrices() {
+async function getOrdersWithPrices() {
     const orders = await getData('corporate', `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/savedorders`);
     const promises = await Promise.allSettled(orders.map(async order => await getOrderWithPrice(order)));
     return promises.map(promise => promise.value);
 }
 
 async function getOrderWithPrice(order) {
-    const date = new Date(order.savedTime).getTime();
-    const history = await getData('personal', `https://api.tdameritrade.com/v1/marketdata/${order.orderLegCollection[0].instrument.symbol}/pricehistory`, { startDate: date, endDate: date, periodType: "day", frequencyType: "minute", frequency: 60, needExtendedHoursData: false });
-    order.price = Math.round(history.candles.reduce((sum, candle) => sum + candle.close, 0) / history.candles.length * 100) / 100;
+    const orderDate = new Date(order.savedTime);
+    const openDate = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate(), 6, 30);
+    const minutes = Math.floor((orderDate - openDate) / (1000*60));
+    const history = await getData('personal', `https://api.tdameritrade.com/v1/marketdata/${order.orderLegCollection[0].instrument.symbol}/pricehistory`, { startDate: orderDate.getTime(), endDate: orderDate.getTime(), periodType: "day", frequencyType: "minute", frequency: 1, needExtendedHoursData: true });
+    order.price = history.candles[minutes].close; //Math.round(history.candles.reduce((sum, candle) => sum + candle.close, 0) / history.candles.length * 100) / 100;
     return order;
 }
 
 export async function renderOrders() {
-    console.log(await orderPositions())
+    const positions = await orderPositions();
+
+    console.log(positions);
+}
+
+// deprecated
+export async function renderOrders2() {
     const orders = await getData('corporate', `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/savedorders`);
     const ol = document.getElementById('orders');
 

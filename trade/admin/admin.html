@@ -4,7 +4,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="module">
             import { getData, deleteOrder } from "/login/fetch.mjs";
-            import { MAX_QUANTITY, QUANTITY_STEP } from '../robot/tao.mjs';
+            import { QUANTITY } from '../robot/tao.mjs';
             import { confirmMarketOrder } from '../tda.mjs';
             import { renderOrders } from "./orders.mjs";
             import { openStream, closeStream } from './streams.mjs';
@@ -16,12 +16,12 @@
             window.onload = async () => {
                 document.getElementById('test').style.backgroundColor = Number(localStorage.getItem('test')) ? 'red' : 'green';
 
-                range.step = QUANTITY_STEP;
-                range.min = QUANTITY_STEP;
-                range.max = MAX_QUANTITY;
-                number.step = QUANTITY_STEP;
-                number.min = QUANTITY_STEP;
-                number.max = MAX_QUANTITY;
+                range.step = QUANTITY.STEP;
+                range.min = QUANTITY.STEP;
+                range.max = QUANTITY.MAX;
+                number.step = QUANTITY.STEP;
+                number.min = QUANTITY.STEP;
+                number.max = QUANTITY.MAX;
 
                 orders = await renderOrders();
             }

@@ -67,28 +67,38 @@ function hasPositionReachedStopLoss(stock, reverse=false) {
     }
 }
 
-const MAX_QUANTITY = 40*LEVEL; // 20
+const QUANTITY = { MIN: null, MAX: 40*LEVEL, STEP: 10*LEVEL };
+// max: 20, step: 5
 // total = 3x // < 100
-const QUANTITY_STEP = 10*LEVEL; // 5
 // open slowly // close ALL right away
-export { MAX_QUANTITY, QUANTITY_STEP, INTERVAL };
+export { INTERVAL, QUANTITY };
 
 // tao = KIITOS
 
-const BEAR_CONDITION = { SP: -1, NQ: -1, BRK: 2 }; 
-function isBearMarket(stocks) {
-    const SP = stocks['$SPX.X'].netPercentChangeInDouble < BEAR_CONDITION.SP; // percent change from yesterday
-    const NQ = stocks['$COMPX'].netPercentChangeInDouble < BEAR_CONDITION.NQ; // percent change from yesterday
-    const BRK = stocks['BRK.B'].askSize / stocks['BRK.B'].bidSize > BEAR_CONDITION.BRK; // supply / demand
+const BEAR_CONDITIONS = { SP: [-1, 0], NQ: [-1, 0], BRK: [-1, 0], BRK2: 2 }; 
+function isBearMarketBeginning(stocks) {
+    const SP = BEAR_CONDITIONS.SP[0] < stocks['$SPX.X'].netPercentChangeInDouble && stocks['$SPX.X'].netPercentChangeInDouble < BEAR_CONDITIONS.SP[1]; // percent change from yesterday
+    const NQ = BEAR_CONDITIONS.NQ[0] < stocks['$COMPX'].netPercentChangeInDouble && stocks['$COMPX'].netPercentChangeInDouble < BEAR_CONDITIONS.NQ[1]; // percent change from yesterday
+    const BRK = BEAR_CONDITIONS.BRK[0] < stocks['BRK.B'].markPercentChangeInDouble && stocks['BRK.B'].markPercentChangeInDouble < BEAR_CONDITIONS.BRK[1]; // percent change from yesterday
+    //const BRK = stocks['BRK.B'].askSize / stocks['BRK.B'].bidSize > BEAR_CONDITIONS.BRK; // supply / demand
+    return SP && NQ && BRK;
+}
+
+const BULL_CONDITIONS = { SP: [0, 1], NQ: [0, 1], BRK: [0, 1], BRK2: 2 }; 
+function isBullMarketBeginning(stocks) {
+    const SP = BULL_CONDITIONS.SP[0] < stocks['$SPX.X'].netPercentChangeInDouble && stocks['$SPX.X'].netPercentChangeInDouble < BULL_CONDITIONS.SP[1]; // percent change from yesterday
+    const NQ = BULL_CONDITIONS.NQ[0] < stocks['$COMPX'].netPercentChangeInDouble && stocks['$COMPX'].netPercentChangeInDouble < BULL_CONDITIONS.NQ[1]; // percent change from yesterday
+    const BRK = BULL_CONDITIONS.BRK[0] < stocks['BRK.B'].markPercentChangeInDouble && stocks['BRK.B'].markPercentChangeInDouble < BULL_CONDITIONS.BRK[1]; // percent change from yesterday
+    //const BRK = stocks['BRK.B'].bidSize / stocks['BRK.B'].askSize > BULL_CONDITIONS.BRK; // demand / supply
     return SP && NQ && BRK;
 }
 
 export function kiitos(account, stocks) {
     if (isTradingHour()) {
-        if (isBearMarket(stocks)) {
+        if (isBearMarketBeginning(stocks)) {
             MARGIN_STOCKS.forEach(stock => bearMarketMarginTrade(account, stocks[stock]));
             CASH_STOCKS.forEach(stock => bearMarketCashTrade(stocks[stock]));
-        } else {
+        } else if (isBullMarketBeginning(stocks)) {
             CASH_STOCKS.forEach(stock => bullMarketCashTrade(account, stocks[stock]));
             MARGIN_STOCKS.forEach(stock => bullMarketMarginTrade(stocks[stock]));
         } 
@@ -97,9 +107,10 @@ export function kiitos(account, stocks) {
 
 // yin - BEAR
 
-const MARGIN_QUANTITY = { MIN: 10*LEVEL, MAX: 40*LEVEL };
+const MARGIN_QUANTITY = { MIN: 10*LEVEL, MAX: 40*LEVEL, STEP: null };
 // min = 5 starting max quantity
 // max = 20 max quantity
+// later: limit quantity step?
 function getAllowMarginQuantity(stock, quantity) {
     if (stock.position) {
         const availableQuantity = MARGIN_QUANTITY.MAX - stock.position.shortQuantity;
@@ -120,6 +131,11 @@ function hasEnoughMargin(account, stock, quantity) {
     return stock.mark * quantity < account.securitiesAccount.currentBalances.buyingPower * MAX_MARGIN;
 }
 
+const BEAR = [-1, 0];
+function isBearBeginning(stock) {
+    return BEAR[0] < stock.markPercentChangeInDouble && stock.markPercentChangeInDouble < BEAR[1];
+}
+
 // short and cover only
 function bearMarketMarginTrade(account, stock) {
     const quantity = hasEnoughSupply(stock);
@@ -128,12 +144,12 @@ function bearMarketMarginTrade(account, stock) {
         if (isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock) || hasPositionReachedStopLoss(stock))) {
             // close short position
             placeMarketOrder('Cover', stock.symbol, stock.position.shortQuantity);
-        } else if (quantity && hasEnoughMargin(account, stock, quantity)) {
+        } else if (isBearBeginning(stock) && quantity && hasEnoughMargin(account, stock, quantity)) {
             // add to short position
             placeMarketOrder('Short', stock.symbol, quantity);
         }
     } else {
-        if (quantity && hasEnoughMargin(account, stock, quantity)) {
+        if (isBearBeginning(stock) && quantity && hasEnoughMargin(account, stock, quantity)) {
             // begin short position
             placeMarketOrder('Short', stock.symbol, quantity);
         }
@@ -149,9 +165,10 @@ function bearMarketCashTrade(stock) {
 
 // yang = BULL
 
-const CASH_QUANTITY = { MIN: 20*LEVEL, MAX: 60*LEVEL };
+const CASH_QUANTITY = { MIN: 20*LEVEL, MAX: 60*LEVEL, STEP: null };
 // min = 10 starting max quantity
 // max = 30 max quantity
+// later: limit quantity step?
 function getAllowCashQuantity(stock, quantity) {
     if (stock.position) {
         const availableQuantity = CASH_QUANTITY.MAX - stock.position.longQuantity;
@@ -172,6 +189,11 @@ function hasEnoughCash(account, stock, quantity) {
     return stock.mark * quantity < account.securitiesAccount.currentBalances.availableFundsNonMarginableTrade * MAX_CASH;
 }
 
+const BULL = [0, 1];
+function isBullBeginning(stock) {
+    return BULL[0] < stock.markPercentChangeInDouble && stock.markPercentChangeInDouble < BULL[1];
+}
+
 // buy and sell only
 function bullMarketCashTrade(account, stock) {
     const quantity = hasEnoughDemand(stock);
@@ -180,12 +202,12 @@ function bullMarketCashTrade(account, stock) {
         if (isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock) || hasPositionReachedStopLoss(stock))) {
             // close long position
             placeMarketOrder('Sell', stock.symbol, stock.position.longQuantity);
-        } else if (quantity && hasEnoughCash(account, stock, quantity)) {
+        } else if (isBullBeginning(stock) && quantity && hasEnoughCash(account, stock, quantity)) {
             // add to long position
             placeMarketOrder('Buy', stock.symbol, quantity);
         }
     } else {
-        if (quantity && hasEnoughCash(account, stock, quantity)) {
+        if (isBullBeginning(stock) && quantity && hasEnoughCash(account, stock, quantity)) {
             // begin long position
             placeMarketOrder('Buy', stock.symbol, quantity);
         }

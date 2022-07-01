@@ -12,8 +12,13 @@ export function sendAlert(stocks) {
             averagePrice = stocks[stock].position.averagePrice;
             quantity = -stocks[stock].position.shortQuantity || stocks[stock].position.longQuantity;
             change = quantity > 0 ? stocks[stock].mark - averagePrice : averagePrice - stocks[stock].mark;
-        } else {
+        } else if (stocks[stock].order) {
             position = "*";
+            averagePrice = stocks[stock].order.averagePrice;
+            quantity = -stocks[stock].order.shortQuantity || stocks[stock].order.longQuantity;
+            change = quantity > 0 ? stocks[stock].mark - averagePrice : averagePrice - stocks[stock].mark;
+        } else {
+            position = "@";
             averagePrice = stocks[stock].closePrice;
             quantity = 100;
             change = stocks[stock].mark - averagePrice;

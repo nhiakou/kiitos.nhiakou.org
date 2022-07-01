@@ -1,5 +1,6 @@
 import { ALL } from "./robot/stocks.mjs";
-import { getTDA as getAccount } from "/account/tda.mjs"; 
+import { getTDA as getAccount } from "/account/tda.mjs";
+import { orderPositions } from "./admin/orders.mjs";
 import { getData, postData } from "/login/fetch.mjs";
 import { sendMail } from "./admin/mail.mjs";
 
@@ -8,8 +9,10 @@ export async function getTDA() {
     const market = await getData('personal', 'https://api.tdameritrade.com/v1/marketdata/EQUITY/hours', { date: new Date().toISOString() });
     const stocks = await getData('personal', 'https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: ALL.join(",") });
     const positions = await getData('corporate', 'https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('corporate-account_id'), { fields: 'positions' });
+    const orders = await orderPositions();
 
     for (const stock in stocks) {
+        stocks[stock].order = orders.find(order => order.stock === stock);
         stocks[stock].position = positions.securitiesAccount.positions.find(position => position.instrument.symbol === stock);
         stocks[stock].lastTrade = history.find(trade => trade.transactionItem.instrument.symbol === stock);
     }
