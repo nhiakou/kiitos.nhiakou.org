@@ -47,6 +47,10 @@ export async function placeMarketOrder(order, symbol, quantity) {
     }
 }
 
+function generateStockStats(stock) {
+
+}
+
 // buy long
 async function openLongPosition(symbol, quantity) {
     const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/${ Number(localStorage.getItem('test')) ? 'savedorders': 'orders' }`, {

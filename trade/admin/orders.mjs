@@ -1,3 +1,4 @@
+import { STOCKS } from "../robot/stocks.mjs";
 import { getData } from "/login/fetch.mjs";
 
 export async function orderPositions() {
@@ -58,9 +59,42 @@ async function getOrderWithPrice(order) {
 }
 
 export async function renderOrders() {
+    const ol = document.getElementById('orders');
+    const stocks = await getData('personal', 'https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: STOCKS.join(",") });
     const positions = await orderPositions();
 
-    console.log(positions);
+    positions.forEach(position => {        
+        const li = document.createElement('li');
+        const ul = document.createElement('ul');
+        ul.style.opacity = position.closingPrice ? "0.5" : "1";
+        ol.append(li);
+        li.append(ul);
+
+        const currentPrice = position.closingPrice || stocks[position.stock].mark;
+        const quantity = -position.shortQuantity || position.longQuantity;
+        const dollarProfit = (position.averagePrice - currentPrice) * position.shortQuantity || (currentPrice - position.averagePrice) * position.longQuantity;
+        const percentProfit = position.shortQuantity > 0 ? (position.averagePrice / currentPrice * 100 - 100) : (currentPrice / position.averagePrice * 100 - 100);
+
+        ul.append(createLiElement("Stock", position.stock));
+        ul.append(createLiElement("$ Profit", dollarProfit.toFixed(2)));
+        ul.append(createLiElement("% Profit", (percentProfit*100).toFixed(2)));
+        ul.append(createLiElement("Current Price", currentPrice));
+        ul.append(createLiElement("Average Cost", position.averagePrice));
+        ul.append(createLiElement("Quantity", quantity));
+    });
+}
+
+function createLiElement(name, value) {
+    const li = document.createElement('li');
+    const b = document.createElement('b');
+    const span = document.createElement('span');
+
+    b.textContent = name + ": ";
+    span.textContent = value;
+    span.style.color = isNaN(value) ? "purple" : (value < 0 ? "red" : "green");
+
+    li.append(b, span);
+    return li;
 }
 
 // deprecated
