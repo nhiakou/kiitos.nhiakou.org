@@ -35,7 +35,7 @@ export async function orderPositions() {
         }
     });
 
-    return positions;
+    return { orders, positions };
 }
 
 function getAveragePrice(position, order) {
@@ -61,7 +61,7 @@ async function getOrderWithPrice(order) {
 export async function renderOrders() {
     const ol = document.getElementById('orders');
     const stocks = await getData('personal', 'https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: STOCKS.join(",") });
-    const positions = await orderPositions();
+    const { orders, positions } = await orderPositions();
 
     positions.forEach(position => {        
         const li = document.createElement('li');
@@ -82,6 +82,8 @@ export async function renderOrders() {
         ul.append(createLiElement("Average Cost", position.averagePrice));
         ul.append(createLiElement("Quantity", quantity));
     });
+
+    return { stocks, orders, positions };
 }
 
 function createLiElement(name, value) {

@@ -2,7 +2,7 @@ import { ALL } from "./robot/stocks.mjs";
 import { getTDA as getAccount } from "/account/tda.mjs";
 import { orderPositions } from "./admin/orders.mjs";
 import { getData, postData } from "/login/fetch.mjs";
-import { sendMail } from "./admin/mail.mjs";
+import { mailPositionReport } from "./robot/alert.mjs";
 
 export async function getTDA() {
     const { account, history } = await getAccount();
@@ -22,33 +22,27 @@ export async function getTDA() {
     return { account, market, stocks };
 }
 
-export async function confirmMarketOrder(order, symbol, quantity) {
+export async function confirmMarketOrder(order, stock, quantity) {
     const test = Number(localStorage.getItem('test')) ? 'TEST' : 'REAL';
-    if (confirm(`${test}: Are you sure you want to ${order} ${quantity} shares of ${symbol}?`)) {
-        await placeMarketOrder(order, symbol, quantity);
+    if (confirm(`${test}: Are you sure you want to ${order} ${quantity} shares of ${stock.symbol}?`)) {
+        await placeMarketOrder(order, stock, quantity);
         window.location.reload();
     }
 }
 
-export async function placeMarketOrder(order, symbol, quantity) {
-    const subject = `${order}: ${symbol} x ${quantity}`;
-    const html = `<i>${order}</i>: <u>${symbol}</u> x <b>${quantity}</b>`;
-    await sendMail(subject, html);
+export async function placeMarketOrder(order, stock, quantity) {
+    await mailPositionReport(order, stock, quantity);
     
     switch (order) {
         case 'Buy':
-            return {status: await openLongPosition(symbol, quantity)};
+            return {status: await openLongPosition(stock.symbol, quantity)};
         case 'Sell':
-            return {status: await closeLongPosition(symbol, quantity)};
+            return {status: await closeLongPosition(stock.symbol, quantity)};
         case 'Short':
-            return {status: await openShortPosition(symbol, quantity)};
+            return {status: await openShortPosition(stock.symbol, quantity)};
         case 'Cover':
-            return {status: await closeShortPosition(symbol, quantity)};
+            return {status: await closeShortPosition(stock.symbol, quantity)};
     }
-}
-
-function generateStockStats(stock) {
-
 }
 
 // buy long

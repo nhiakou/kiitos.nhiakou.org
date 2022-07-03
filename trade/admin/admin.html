@@ -9,7 +9,7 @@
             import { renderOrders } from "./orders.mjs";
             import { openStream, closeStream } from './streams.mjs';
 
-            let orders = null;
+            let orders, stocks, positions;
             const range = document.getElementById('range-quantity');
             const number = document.getElementById('number-quantity');
 
@@ -23,7 +23,10 @@
                 number.min = QUANTITY.STEP;
                 number.max = QUANTITY.MAX;
 
-                orders = await renderOrders();
+                const data = await renderOrders();
+                orders = data.orders;
+                stocks = data.stocks;
+                positions = data.positions;
             }
 
             window.deleteAll = async button => {
@@ -43,7 +46,8 @@
             window.placeOrder = async event => {
                 event.preventDefault();
                 const input = Object.fromEntries(new FormData(event.target));
-                await confirmMarketOrder(input.order, input.symbol, input.quantity);
+                stocks[input.symbol].order = positions.find(position => position.stock === imput.symbol)
+                await confirmMarketOrder(input.order, stocks[input.symbol], input.quantity);
             }
 
             window.openStream = button => {

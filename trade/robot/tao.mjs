@@ -143,15 +143,15 @@ function bearMarketMarginTrade(account, stock) {
     if (stock.position) {
         if (isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock) || hasPositionReachedStopLoss(stock))) {
             // close short position
-            placeMarketOrder('Cover', stock.symbol, stock.position.shortQuantity);
+            placeMarketOrder('Cover', stock, stock.position.shortQuantity);
         } else if (isBearBeginning(stock) && quantity && hasEnoughMargin(account, stock, quantity)) {
             // add to short position
-            placeMarketOrder('Short', stock.symbol, quantity);
+            placeMarketOrder('Short', stock, quantity);
         }
     } else {
         if (isBearBeginning(stock) && quantity && hasEnoughMargin(account, stock, quantity)) {
             // begin short position
-            placeMarketOrder('Short', stock.symbol, quantity);
+            placeMarketOrder('Short', stock, quantity);
         }
     }
 }
@@ -159,7 +159,7 @@ function bearMarketMarginTrade(account, stock) {
 // market reverses: close long positions
 function bearMarketCashTrade(stock) {
     if (stock.position && isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, true) || hasPositionReachedStopLoss(stock, true))) {
-        placeMarketOrder('Sell', stock.symbol, stock.position.longQuantity);
+        placeMarketOrder('Sell', stock, stock.position.longQuantity);
     }
 }
 
@@ -201,15 +201,15 @@ function bullMarketCashTrade(account, stock) {
     if (stock.position) {
         if (isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock) || hasPositionReachedStopLoss(stock))) {
             // close long position
-            placeMarketOrder('Sell', stock.symbol, stock.position.longQuantity);
+            placeMarketOrder('Sell', stock, stock.position.longQuantity);
         } else if (isBullBeginning(stock) && quantity && hasEnoughCash(account, stock, quantity)) {
             // add to long position
-            placeMarketOrder('Buy', stock.symbol, quantity);
+            placeMarketOrder('Buy', stock, quantity);
         }
     } else {
         if (isBullBeginning(stock) && quantity && hasEnoughCash(account, stock, quantity)) {
             // begin long position
-            placeMarketOrder('Buy', stock.symbol, quantity);
+            placeMarketOrder('Buy', stock, quantity);
         }
     }
 }
@@ -217,6 +217,6 @@ function bullMarketCashTrade(account, stock) {
 // market reverses: close short positions
 function bullMarketMarginTrade(stock) {
     if (stock.position && isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, true) || hasPositionReachedStopLoss(stock, true))) {
-        placeMarketOrder('Cover', stock.symbol, stock.position.shortQuantity);
+        placeMarketOrder('Cover', stock, stock.position.shortQuantity);
     }
 }

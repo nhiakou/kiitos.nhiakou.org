@@ -64,11 +64,99 @@ export function sendAlert(stocks) {
         `;
 
         if (isEvery30Minutes()) sendMail(subject, message);
-        
+    
     });
 }
 
 function isEvery30Minutes() {
     const now = new Date();
     return now.getMinutes() === 30;
+}
+
+export async function mailPositionReport(order, stock, quantity) {
+    if (Number(localStorage.getItem('test'))) {
+        if (stock.order) {
+            stock.order.openingPrice = stock.mark;
+            switch (order) {
+                case "Buy":
+                    stock.order.averagePrice = getAveragePrice(stock.order.averagePrice, stock.order.longQuantity, stock.order.openingPrice, quantity);
+                    stock.order.longQuantity += quantity;
+                case "Short":
+                    stock.order.averagePrice = getAveragePrice(stock.order.averagePrice, stock.order.shortQuantity, stock.order.openingPrice, quantity);
+                    stock.order.shortQuantity += quantity;
+                case "Sell":
+                    stock.order.closingPrice = stock.mark;
+                case "Cover":
+                    stock.order.closingPrice = stock.mark;
+            }
+        } else {
+            stock.order = { openingPrice: stock.mark, averagePrice: stock.mark, closingPrice: 0 };
+            switch (order) {
+                case "Buy":
+                    stock.order.longQuantity = quantity;
+                    stock.order.shortQuantity = 0;
+                case "Short":
+                    stock.order.shortQuantity = quantity;
+                    stock.order.longQuantity = 0;
+            }
+        }
+
+        await sendPositionReport('TEST', order, stock.symbol, quantity, stock.order);
+
+    } else {
+        if (stock.position) {
+            stock.position.openingPrice = stock.mark;
+            switch (order) {
+                case "Buy":
+                    stock.position.averagePrice = getAveragePrice(stock.position.averagePrice, stock.position.longQuantity, stock.position.openingPrice, quantity);
+                    stock.position.longQuantity += quantity;
+                case "Short":
+                    stock.position.averagePrice = getAveragePrice(stock.position.averagePrice, stock.position.shortQuantity, stock.position.openingPrice, quantity);
+                    stock.position.shortQuantity += quantity;
+                case "Sell":
+                    stock.position.closingPrice = stock.mark;
+                case "Cover":
+                    stock.position.closingPrice = stock.mark;
+            }
+        } else {
+            stock.position = { openingPrice: stock.mark, averagePrice: stock.mark, closingPrice: 0 };
+            switch (order) {
+                case "Buy":
+                    stock.position.longQuantity = quantity;
+                    stock.position.shortQuantity = 0;
+                case "Short":
+                    stock.position.shortQuantity = quantity;
+                    stock.position.longQuantity = 0;
+            }
+        }
+
+        await sendPositionReport('LIVE', order, stock.symbol, quantity, stock.position); 
+    }
+}
+
+function getAveragePrice(p1, q1, p2, q2) {
+    return Math.round((p1*q1 + p2*q2) / (q1+q2) * 100) / 100;
+}
+
+async function sendPositionReport(mode, order, symbol, quantity, position) {
+    const subject = `${mode} ${order}: ${symbol} x ${quantity}`;
+
+    const currentPrice = position.closingPrice || position.openingPrice;
+    const totalQuantity = -position.shortQuantity || position.longQuantity;
+    const dollarProfit = (position.averagePrice - currentPrice) * position.shortQuantity || (currentPrice - position.averagePrice) * position.longQuantity;
+    const percentProfit = position.shortQuantity > 0 ? (position.averagePrice / currentPrice * 100 - 100) : (currentPrice / position.averagePrice * 100 - 100);
+
+    const change = totalQuantity > 0 ? currentPrice - position.averagePrice : position.averagePrice - currentPrice;
+    const profit = change >= 0;
+
+    const message = `<b><u>Profit</u>:</b> <span style="color:${profit ? 'green' : 'red'}">${formatToDollars(dollarProfit)}</span> | <span style="color:${profit ? 'green' : 'red'}">${formatToPercents(percentProfit)}</span>
+    <br><br>
+    <b>Current:</b> <span style="color:${profit ? 'green' : 'red'}">${formatToDollars(currentPrice)}</span>
+    <br>
+    <b>Average:</b> ${formatToDollars(position.averagePrice)}
+    <br>
+    <b>Quantity:</b> ${formatToQuantity(totalQuantity)}
+    `;
+    
+    await sendMail(subject, message);
 }

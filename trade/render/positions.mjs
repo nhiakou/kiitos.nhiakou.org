@@ -19,40 +19,40 @@ export function renderPositions(stocks) {
 
 export function renderButtons(stocks) {
     STOCKS.forEach(stock => {
-        placeOrder('Buy', document.getElementById(stock + '-buy'), stocks[stock]);
-        placeOrder('Sell', document.getElementById(stock + '-sell'), stocks[stock]);
-        placeOrder('Short', document.getElementById(stock + '-borrow'), stocks[stock]);
-        placeOrder('Cover', document.getElementById(stock + '-return'), stocks[stock]);
+        placeOrder('Buy', stocks[stock], document.getElementById(stock + '-buy'));
+        placeOrder('Sell', stocks[stock], document.getElementById(stock + '-sell'));
+        placeOrder('Short', stocks[stock], document.getElementById(stock + '-borrow'));
+        placeOrder('Cover', stocks[stock], document.getElementById(stock + '-return'));
     });
 }
 
-function placeOrder(order, button, stock) {
+function placeOrder(order, stock, button) {
     const recommendedShortQuantity = Math.floor(stock.askSize / stock.bidSize);
     const recommendedLongQuantity = Math.floor(stock.bidSize / stock.askSize);
 
     if (stock.position) {
         if (stock.position.shortQuantity) {
             if (order === 'Cover') {
-                button.onclick = () => confirmMarketOrder(order, stock.symbol, stock.position.shortQuantity);
+                button.onclick = () => confirmMarketOrder(order, stock, stock.position.shortQuantity);
             } else if (order === 'Short' && recommendedShortQuantity) {
-                button.onclick = () => confirmMarketOrder(order, stock.symbol, recommendedShortQuantity);
+                button.onclick = () => confirmMarketOrder(order, stock, recommendedShortQuantity);
             } else {
                 button.disabled = true;
             }
         } else {
             if (order === 'Sell') {
-                button.onclick = () => confirmMarketOrder(order, stock.symbol, stock.position.longQuantity);
+                button.onclick = () => confirmMarketOrder(order, stock, stock.position.longQuantity);
             } else if (order === 'Buy' && recommendedLongQuantity) {
-                button.onclick = () => confirmMarketOrder(order, stock.symbol, recommendedLongQuantity);
+                button.onclick = () => confirmMarketOrder(order, stock, recommendedLongQuantity);
             } else {
                 button.disabled = true;
             }
         }
     } else {
         if (order === 'Short' && recommendedShortQuantity) {
-            button.onclick = () => confirmMarketOrder(order, stock.symbol, recommendedShortQuantity);
+            button.onclick = () => confirmMarketOrder(order, stock, recommendedShortQuantity);
         } else if (order === 'Buy' && recommendedLongQuantity) {
-            button.onclick = () => confirmMarketOrder(order, stock.symbol, recommendedLongQuantity);
+            button.onclick = () => confirmMarketOrder(order, stock, recommendedLongQuantity);
         } else {
             button.disabled = true;
         }
