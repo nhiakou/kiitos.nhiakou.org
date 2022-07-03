@@ -50,11 +50,16 @@ async function getOrdersWithPrices() {
 }
 
 async function getOrderWithPrice(order) {
-    const orderDate = new Date(order.savedTime);
-    const openDate = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate(), 6, 30);
-    const minutes = Math.floor((orderDate - openDate) / (1000*60));
-    const history = await getData('personal', `https://api.tdameritrade.com/v1/marketdata/${order.orderLegCollection[0].instrument.symbol}/pricehistory`, { startDate: orderDate.getTime(), endDate: orderDate.getTime(), periodType: "day", frequencyType: "minute", frequency: 1, needExtendedHoursData: true });
-    order.price = history.candles[minutes].close; //Math.round(history.candles.reduce((sum, candle) => sum + candle.close, 0) / history.candles.length * 100) / 100;
+    try {
+        const orderDate = new Date(order.savedTime);
+        const openDate = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate(), 6, 30);
+        const minutes = Math.floor((orderDate - openDate) / (1000*60));
+        const history = await getData('personal', `https://api.tdameritrade.com/v1/marketdata/${order.orderLegCollection[0].instrument.symbol}/pricehistory`, { startDate: orderDate.getTime(), endDate: orderDate.getTime(), periodType: "day", frequencyType: "minute", frequency: 1, needExtendedHoursData: true });
+        order.price = history.candles[minutes].close; //Math.round(history.candles.reduce((sum, candle) => sum + candle.close, 0) / history.candles.length * 100) / 100;
+    } catch {
+        order.price = 33.33;
+    }
+
     return order;
 }
 

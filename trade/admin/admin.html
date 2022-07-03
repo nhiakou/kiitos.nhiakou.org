@@ -46,7 +46,7 @@
             window.placeOrder = async event => {
                 event.preventDefault();
                 const input = Object.fromEntries(new FormData(event.target));
-                stocks[input.symbol].order = positions.find(position => position.stock === imput.symbol)
+                stocks[input.symbol].order = positions.find(position => position.stock === input.symbol)
                 await confirmMarketOrder(input.order, stocks[input.symbol], input.quantity);
             }
 

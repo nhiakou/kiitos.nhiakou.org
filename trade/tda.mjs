@@ -9,8 +9,8 @@ export async function getTDA() {
     const market = await getData('personal', 'https://api.tdameritrade.com/v1/marketdata/EQUITY/hours', { date: new Date().toISOString() });
     const stocks = await getData('personal', 'https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: ALL.join(",") });
     const positions = await getData('corporate', 'https://api.tdameritrade.com/v1/accounts/' + localStorage.getItem('corporate-account_id'), { fields: 'positions' });
-    const orders = await orderPositions();
-
+    const { positions: orders } = await orderPositions();
+    
     for (const stock in stocks) {
         stocks[stock].order = orders.find(order => order.stock === stock);
         stocks[stock].position = positions.securitiesAccount.positions.find(position => position.instrument.symbol === stock);
