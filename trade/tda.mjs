@@ -31,7 +31,7 @@ export async function confirmMarketOrder(order, stock, quantity) {
 }
 
 export async function placeMarketOrder(order, stock, quantity) {
-    await mailPositionReport(order, stock, quantity);
+    mailPositionReport(order, stock, quantity);
     
     switch (order) {
         case 'Buy':

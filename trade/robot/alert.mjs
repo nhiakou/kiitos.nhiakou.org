@@ -63,17 +63,12 @@ export function sendAlert(stocks) {
         1-Year: <b>${formatToDollars(stocks[stock]['52WkLow'])}</b> to <b>${formatToDollars(stocks[stock]['52WkHigh'])}</b>
         `;
 
-        if (isEvery30Minutes()) sendMail(subject, message);
+        sendMail(subject, message);
     
     });
 }
 
-function isEvery30Minutes() {
-    const now = new Date();
-    return now.getMinutes() === 30;
-}
-
-export async function mailPositionReport(order, stock, quantity) {
+export function mailPositionReport(order, stock, quantity) {
     if (Number(localStorage.getItem('test'))) {
         if (stock.order) {
             stock.order.openingPrice = stock.mark;
@@ -101,7 +96,7 @@ export async function mailPositionReport(order, stock, quantity) {
             }
         }
 
-        await sendPositionReport('TEST', order, stock.symbol, quantity, stock.order);
+        sendPositionReport('TEST', order, stock.symbol, quantity, stock.order);
 
     } else {
         if (stock.position) {
@@ -130,7 +125,7 @@ export async function mailPositionReport(order, stock, quantity) {
             }
         }
 
-        await sendPositionReport('LIVE', order, stock.symbol, quantity, stock.position); 
+        sendPositionReport('LIVE', order, stock.symbol, quantity, stock.position); 
     }
 }
 
@@ -138,7 +133,7 @@ function getAveragePrice(p1, q1, p2, q2) {
     return Math.round((p1*q1 + p2*q2) / (q1+q2) * 100) / 100;
 }
 
-async function sendPositionReport(mode, order, symbol, quantity, position) {
+function sendPositionReport(mode, order, symbol, quantity, position) {
     const subject = `${mode} ${order}: ${symbol} x ${quantity}`;
 
     const currentPrice = position.closingPrice || position.openingPrice;
@@ -158,5 +153,5 @@ async function sendPositionReport(mode, order, symbol, quantity, position) {
     <b>Quantity:</b> ${formatToQuantity(totalQuantity)}
     `;
     
-    await sendMail(subject, message);
+    sendMail(subject, message);
 }

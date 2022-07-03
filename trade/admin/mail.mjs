@@ -10,6 +10,6 @@ export async function sendMail(subject, html) {
         })
     });
     
-    console.log(subject);
+    //console.log(subject);
     return mail.json();
 }

@@ -58,9 +58,9 @@ async function getOrderWithPrice(order) {
         order.price = history.candles[minutes].close; //Math.round(history.candles.reduce((sum, candle) => sum + candle.close, 0) / history.candles.length * 100) / 100;
     } catch {
         order.price = 33.33;
+    } finally {
+        return order;
     }
-
-    return order;
 }
 
 export async function renderOrders() {

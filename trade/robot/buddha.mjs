@@ -10,7 +10,7 @@ export async function god() {
 
    if (!LIVE || isMarketOpen(data.market)) {
       kiitos(data.account, data.stocks);
-      sendAlert(data.stocks);
+      if (!LIVE || isEvery30Minutes()) sendAlert(data.stocks);
    }
 }
 
@@ -24,4 +24,9 @@ export function isMarketOpen(market) {
    } else {
        return false;
    }
+}
+
+function isEvery30Minutes() {
+   const now = new Date();
+   return now.getMinutes() === 30;
 }

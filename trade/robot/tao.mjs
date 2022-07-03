@@ -46,24 +46,24 @@ LEVELS
 const DESIRED_PROFIT = { MIN: 20*LEVEL, MAX: 100*LEVEL };
 // min => $10 close position when market reverses
 // max => $50 close position
-function hasPositionReachedDesiredProfit(stock, reverse=false) {
+function hasPositionReachedDesiredProfit(stock, position, reverse=false) {
     const desiredProfit = reverse ? DESIRED_PROFIT.MIN : DESIRED_PROFIT.MAX;
-    if (stock.position.shortQuantity) {
-        return (stock.position.averagePrice - stock.mark) * stock.position.shortQuantity >= desiredProfit;
+    if (position.shortQuantity) {
+        return (position.averagePrice - stock.mark) * position.shortQuantity >= desiredProfit;
     } else {
-        return (stock.mark - stock.position.averagePrice) * stock.position.longQuantity >= desiredProfit;
+        return (stock.mark - position.averagePrice) * position.longQuantity >= desiredProfit;
     }
 }
 
 const STOP_LOSS = { MIN: 100*LEVEL, MAX: 200*LEVEL };
 // min $50 => close position when market reverses
 // max $100 => close position
-function hasPositionReachedStopLoss(stock, reverse=false) {
+function hasPositionReachedStopLoss(stock, position, reverse=false) {
     const stopLoss = reverse ? STOP_LOSS.MIN : STOP_LOSS.MAX;
-    if (stock.position.shortQuantity) {
-        return (stock.mark - stock.position.averagePrice) * stock.position.shortQuantity > stopLoss;
+    if (position.shortQuantity) {
+        return (stock.mark - position.averagePrice) * position.shortQuantity > stopLoss;
     } else {
-        return (stock.position.averagePrice - stock.mark) * stock.position.longQuantity > stopLoss;
+        return (position.averagePrice - stock.mark) * position.longQuantity > stopLoss;
     }
 }
 
@@ -96,11 +96,11 @@ function isBullMarketBeginning(stocks) {
 export function kiitos(account, stocks) {
     if (isTradingHour()) {
         if (isBearMarketBeginning(stocks)) {
-            MARGIN_STOCKS.forEach(stock => bearMarketMarginTrade(account, stocks[stock]));
-            CASH_STOCKS.forEach(stock => bearMarketCashTrade(stocks[stock]));
+            MARGIN_STOCKS.forEach(stock => bearMarketMarginTrade(account, stocks[stock], Number(localStorage.getItem('test')) ? stock.order : stock.position));
+            CASH_STOCKS.forEach(stock => bearMarketCashTrade(stocks[stock], Number(localStorage.getItem('test')) ? stock.order : stock.position));
         } else if (isBullMarketBeginning(stocks)) {
-            CASH_STOCKS.forEach(stock => bullMarketCashTrade(account, stocks[stock]));
-            MARGIN_STOCKS.forEach(stock => bullMarketMarginTrade(stocks[stock]));
+            CASH_STOCKS.forEach(stock => bullMarketCashTrade(account, stocks[stock], Number(localStorage.getItem('test')) ? stock.order : stock.position));
+            MARGIN_STOCKS.forEach(stock => bullMarketMarginTrade(stocks[stock], Number(localStorage.getItem('test')) ? stock.order : stock.position));
         } 
     }
 }
@@ -111,9 +111,9 @@ const MARGIN_QUANTITY = { MIN: 10*LEVEL, MAX: 40*LEVEL, STEP: null };
 // min = 5 starting max quantity
 // max = 20 max quantity
 // later: limit quantity step?
-function getAllowMarginQuantity(stock, quantity) {
-    if (stock.position) {
-        const availableQuantity = MARGIN_QUANTITY.MAX - stock.position.shortQuantity;
+function getAllowMarginQuantity(position, quantity) {
+    if (position) {
+        const availableQuantity = MARGIN_QUANTITY.MAX - position.shortQuantity;
         return quantity <= availableQuantity ? quantity : availableQuantity;
     } else {
         return quantity <= MARGIN_QUANTITY.MIN ? quantity : MARGIN_QUANTITY.MIN;
@@ -121,9 +121,9 @@ function getAllowMarginQuantity(stock, quantity) {
 }
 
 const SUPPLY_DEMAND = 4; // => open short
-function hasEnoughSupply(stock) {
+function hasEnoughSupply(stock, position) {
     const quantity = Math.floor(stock.askSize / stock.bidSize);
-    return quantity > SUPPLY_DEMAND ? getAllowMarginQuantity(stock, quantity) : 0;
+    return quantity > SUPPLY_DEMAND ? getAllowMarginQuantity(position, quantity) : 0;
 }
 
 const MAX_MARGIN = 0.5; // using only 50% of available margin
@@ -137,13 +137,13 @@ function isBearBeginning(stock) {
 }
 
 // short and cover only
-function bearMarketMarginTrade(account, stock) {
-    const quantity = hasEnoughSupply(stock);
+function bearMarketMarginTrade(account, stock, position) {
+    const quantity = hasEnoughSupply(stock, position);
 
-    if (stock.position) {
-        if (isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock) || hasPositionReachedStopLoss(stock))) {
+    if (position) {
+        if (isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, position) || hasPositionReachedStopLoss(stock, position))) {
             // close short position
-            placeMarketOrder('Cover', stock, stock.position.shortQuantity);
+            placeMarketOrder('Cover', stock, position.shortQuantity);
         } else if (isBearBeginning(stock) && quantity && hasEnoughMargin(account, stock, quantity)) {
             // add to short position
             placeMarketOrder('Short', stock, quantity);
@@ -157,9 +157,9 @@ function bearMarketMarginTrade(account, stock) {
 }
 
 // market reverses: close long positions
-function bearMarketCashTrade(stock) {
-    if (stock.position && isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, true) || hasPositionReachedStopLoss(stock, true))) {
-        placeMarketOrder('Sell', stock, stock.position.longQuantity);
+function bearMarketCashTrade(stock, position) {
+    if (position && isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, position, true) || hasPositionReachedStopLoss(stock, position, true))) {
+        placeMarketOrder('Sell', stock, position.longQuantity);
     }
 }
 
@@ -169,9 +169,9 @@ const CASH_QUANTITY = { MIN: 20*LEVEL, MAX: 60*LEVEL, STEP: null };
 // min = 10 starting max quantity
 // max = 30 max quantity
 // later: limit quantity step?
-function getAllowCashQuantity(stock, quantity) {
-    if (stock.position) {
-        const availableQuantity = CASH_QUANTITY.MAX - stock.position.longQuantity;
+function getAllowCashQuantity(position, quantity) {
+    if (position) {
+        const availableQuantity = CASH_QUANTITY.MAX - position.longQuantity;
         return quantity <= availableQuantity ? quantity : availableQuantity;
     } else {
         return quantity <= CASH_QUANTITY.MIN ? quantity : CASH_QUANTITY.MIN;
@@ -179,9 +179,9 @@ function getAllowCashQuantity(stock, quantity) {
 }
 
 const DEMAND_SUPPLY = 4; // => open long
-function hasEnoughDemand(stock) {
+function hasEnoughDemand(stock, position) {
     const quantity = Math.floor(stock.bidSize / stock.askSize);
-    return quantity > DEMAND_SUPPLY ? getAllowCashQuantity(stock, quantity) : 0;
+    return quantity > DEMAND_SUPPLY ? getAllowCashQuantity(position, quantity) : 0;
 }
 
 const MAX_CASH = 0.7; // using only 70% of available cash
@@ -195,13 +195,13 @@ function isBullBeginning(stock) {
 }
 
 // buy and sell only
-function bullMarketCashTrade(account, stock) {
-    const quantity = hasEnoughDemand(stock);
+function bullMarketCashTrade(account, stock, position) {
+    const quantity = hasEnoughDemand(stock, position);
 
-    if (stock.position) {
-        if (isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock) || hasPositionReachedStopLoss(stock))) {
+    if (position) {
+        if (isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, position) || hasPositionReachedStopLoss(stock, position))) {
             // close long position
-            placeMarketOrder('Sell', stock, stock.position.longQuantity);
+            placeMarketOrder('Sell', stock, position.longQuantity);
         } else if (isBullBeginning(stock) && quantity && hasEnoughCash(account, stock, quantity)) {
             // add to long position
             placeMarketOrder('Buy', stock, quantity);
@@ -215,8 +215,8 @@ function bullMarketCashTrade(account, stock) {
 }
 
 // market reverses: close short positions
-function bullMarketMarginTrade(stock) {
-    if (stock.position && isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, true) || hasPositionReachedStopLoss(stock, true))) {
-        placeMarketOrder('Cover', stock, stock.position.shortQuantity);
+function bullMarketMarginTrade(stock, position) {
+    if (position && isNotRoundTrip(stock) && (hasPositionReachedDesiredProfit(stock, position, true) || hasPositionReachedStopLoss(stock, position, true))) {
+        placeMarketOrder('Cover', stock, position.shortQuantity);
     }
 }
