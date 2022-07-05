@@ -1,0 +1,123 @@
+<html>
+    <head>
+        <title>Personal Admin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="module">
+            import { getData, deleteOrder } from "/login/fetch.mjs";
+            import { renderOrders } from "./orders.mjs";
+            import { openStream, closeStream } from './streams.mjs';
+
+            let orders;
+
+            window.onload = async () => {
+                const data = await renderOrders();
+                orders = data.orders;
+            }
+
+            window.deleteAll = async button => {
+                button.disabled = true;
+                await Promise.allSettled(orders.map(order => deleteOrder(order.savedOrderId)));
+                window.location.reload();
+            }
+
+            window.openStream = button => {
+                document.getElementById('close').disabled = false;
+                button.disabled = true;
+                openStream();
+            }
+
+            window.closeStream = button => {
+                document.getElementById('open').disabled = false;
+                button.disabled = true;
+                closeStream();
+            }
+        </script>
+        <style>
+            body {
+                width: 100vw;
+                height: 100vh;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+
+            header {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: center;
+            }
+
+            ol {
+                overflow: scroll;
+                margin: 0;
+            }
+
+            main section {
+                background-color: lightblue;
+                padding: 1px 15px 15px;
+            }
+
+            footer section {
+                background-color: lightgoldenrodyellow;
+                padding: 1px 15px 15px;
+            }
+
+            section nav {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            h1 {
+                text-align: center;
+            }
+
+            #start {
+                color: green;
+            }
+
+            #stop {
+                color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <nav>
+                <a href="/account/account.html">Account</a>
+                <a href="/trade/trade.html">Trade</a>
+                <a href="/trade/admin/corporate.html">Corporate</a>
+            </nav>
+            <section>
+                <button id="start" onclick="startAnalyzing(this)">Start</button>
+                <button id="stop" onclick="stopAnalyzing(this)" disabled>Stop</button>
+            </section>
+        </header>
+        <br>
+        <main>
+            <section>
+                <nav>
+                    <h2>Positions</h2>
+                    <aside>
+                        <button onclick="deleteAll(this)">Delete All</button>
+                    </aside>
+                </nav>
+                <ol id="orders" reversed></ol>
+            </section>
+        </main>
+        <footer>
+            <h1 id="heartbeat"></h1>
+            <section>
+                <nav>
+                    <h2>Streams</h2>
+                    <aside>
+                        <button id="open" onclick="openStream(this)">Open Stream</button>
+                        <button id="close" onclick="closeStream(this)" disabled>Close Stream</button>
+                    </aside>
+                </nav>
+                <ol id="streams" reversed></ol>
+            </section>
+        </footer>
+    </body>
+</html>

@@ -40,7 +40,7 @@ export async function orderPositions() {
 
 function getAveragePrice(position, order) {
     const previousQuantity = position.shortQuantity || position.longQuantity;
-    return Math.round((position.averagePrice*previousQuantity + order.price*order.orderLegCollection[0].quantity) / (previousQuantity + order.orderLegCollection[0].quantity) * 100) / 100;
+    return (position.averagePrice*previousQuantity + order.price*order.orderLegCollection[0].quantity) / (previousQuantity + order.orderLegCollection[0].quantity);
 }
 
 async function getOrdersWithPrices() {
@@ -82,9 +82,9 @@ export async function renderOrders() {
 
         ul.append(createLiElement("Stock", position.stock));
         ul.append(createLiElement("$ Profit", dollarProfit.toFixed(2)));
-        ul.append(createLiElement("% Profit", (percentProfit*100).toFixed(2)));
-        ul.append(createLiElement("Current Price", currentPrice));
-        ul.append(createLiElement("Average Cost", position.averagePrice));
+        ul.append(createLiElement("% Profit", percentProfit.toFixed(2)));
+        ul.append(createLiElement("Current Price", currentPrice.toFixed(2)));
+        ul.append(createLiElement("Average Cost", position.averagePrice.toFixed(2)));
         ul.append(createLiElement("Quantity", quantity));
     });
 

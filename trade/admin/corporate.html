@@ -1,13 +1,12 @@
 <html>
     <head>
-        <title>Admin</title>
+        <title>Corporate Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="module">
             import { getData, deleteOrder } from "/login/fetch.mjs";
             import { QUANTITY } from '../robot/tao.mjs';
             import { confirmMarketOrder } from '../tda.mjs';
             import { renderOrders } from "./orders.mjs";
-            import { openStream, closeStream } from './streams.mjs';
 
             let orders, stocks, positions;
             const range = document.getElementById('range-quantity');
@@ -49,18 +48,6 @@
                 stocks[input.symbol].order = positions.find(position => position.stock === input.symbol)
                 await confirmMarketOrder(input.order, stocks[input.symbol], input.quantity);
             }
-
-            window.openStream = button => {
-                document.getElementById('close').disabled = false;
-                button.disabled = true;
-                openStream();
-            }
-
-            window.closeStream = button => {
-                document.getElementById('open').disabled = false;
-                button.disabled = true;
-                closeStream();
-            }
         </script>
         <style>
             body {
@@ -89,12 +76,7 @@
                 font-weight: bold;
             }
 
-            footer section:first-child {
-                background-color: lightgoldenrodyellow;
-                padding: 1px 15px 15px;
-            }
-
-            footer section:last-child {
+            footer section {
                 background-color: lightblue;
                 padding: 1px 15px 15px;
             }
@@ -105,10 +87,6 @@
                 justify-content: space-between;
                 align-items: center;
             }
-
-            h1 {
-                text-align: center;
-            }
         </style>
     </head>
     <body>
@@ -116,6 +94,7 @@
             <nav>
                 <a href="/account/account.html">Account</a>
                 <a href="/trade/trade.html">Trade</a>
+                <a href="/trade/admin/personal.html">Personal</a>
             </nav>
             <span id="test">LIVE</span>
         </header>
@@ -163,17 +142,6 @@
                     </aside>
                 </nav>
                 <ol id="orders" reversed></ol>
-            </section>
-            <h1 id="heartbeat"></h1>
-            <section>
-                <nav>
-                    <h2>Streams</h2>
-                    <aside>
-                        <button id="open" onclick="openStream(this)">Open Stream</button>
-                        <button id="close" onclick="closeStream(this)" disabled>Close Stream</button>
-                    </aside>
-                </nav>
-                <ol id="streams" reversed></ol>
             </section>
         </footer>
     </body>
