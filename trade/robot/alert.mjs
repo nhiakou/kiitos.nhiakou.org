@@ -68,8 +68,8 @@ export function sendAlert(stocks) {
     });
 }
 
-export function mailPositionReport(order, stock, quantity) {
-    if (Number(localStorage.getItem('test'))) {
+export function mailPositionReport(test, account, order, stock, quantity) {
+    if (test) {
         if (stock.order) {
             stock.order.openingPrice = stock.mark;
             switch (order) {
@@ -96,7 +96,7 @@ export function mailPositionReport(order, stock, quantity) {
             }
         }
 
-        sendPositionReport('TEST', order, stock.symbol, quantity, stock.order);
+        sendPositionReport('TEST ' + account, order, stock.symbol, quantity, stock.order);
 
     } else {
         if (stock.position) {
@@ -125,7 +125,7 @@ export function mailPositionReport(order, stock, quantity) {
             }
         }
 
-        sendPositionReport('LIVE', order, stock.symbol, quantity, stock.position); 
+        sendPositionReport('LIVE ' + account, order, stock.symbol, quantity, stock.position); 
     }
 }
 

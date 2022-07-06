@@ -1,8 +1,8 @@
 import { STOCKS } from "../robot/stocks.mjs";
 import { getData } from "/login/fetch.mjs";
 
-export async function orderPositions() {
-    const orders = await getOrdersWithPrices();
+export async function orderPositions(account) {
+    const orders = await getOrdersWithPrices(account);
     const positions = [];
 
     orders.forEach(order => {
@@ -43,8 +43,8 @@ function getAveragePrice(position, order) {
     return (position.averagePrice*previousQuantity + order.price*order.orderLegCollection[0].quantity) / (previousQuantity + order.orderLegCollection[0].quantity);
 }
 
-async function getOrdersWithPrices() {
-    const orders = await getData('corporate', `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/savedorders`);
+async function getOrdersWithPrices(account) {
+    const orders = await getData(account, `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/savedorders`);
     const promises = await Promise.allSettled(orders.map(async order => await getOrderWithPrice(order)));
     return promises.map(promise => promise.value);
 }
@@ -63,10 +63,10 @@ async function getOrderWithPrice(order) {
     }
 }
 
-export async function renderOrders() {
+export async function renderOrders(account) {
     const ol = document.getElementById('orders');
     const stocks = await getData('personal', 'https://api.tdameritrade.com/v1/marketdata/quotes', { symbol: STOCKS.join(",") });
-    const { orders, positions } = await orderPositions();
+    const { orders, positions } = await orderPositions(account);
 
     positions.forEach(position => {        
         const li = document.createElement('li');
@@ -105,8 +105,8 @@ function createLiElement(name, value) {
 }
 
 // deprecated
-export async function renderOrders2() {
-    const orders = await getData('corporate', `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/savedorders`);
+export async function renderOrders2(account) {
+    const orders = await getData(account, `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/savedorders`);
     const ol = document.getElementById('orders');
 
     orders.reverse().forEach(order => {

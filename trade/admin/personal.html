@@ -7,16 +7,16 @@
             import { renderOrders } from "./orders.mjs";
             import { openStream, closeStream } from './streams.mjs';
 
-            let orders;
+            let data, orders;
 
             window.onload = async () => {
-                const data = await renderOrders();
-                orders = data.orders;
+                data = await getTDA('personal');
+                ({ orders } = await renderOrders('personal'));
             }
 
             window.deleteAll = async button => {
                 button.disabled = true;
-                await Promise.allSettled(orders.map(order => deleteOrder(order.savedOrderId)));
+                await Promise.allSettled(orders.map(order => deleteOrder('personal', order.savedOrderId)));
                 window.location.reload();
             }
 

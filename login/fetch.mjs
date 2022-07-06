@@ -12,11 +12,11 @@ export async function getData(account, url='', data={}) {
     }).then(response => response.json()).catch(error => console.error(error));    
 }
 
-export async function postData(url='', data={}) {
+export async function postData(account, url='', data={}) {
     const response = await fetch(url, {
         method: 'POST', 
         headers: {
-        'Authorization': 'Bearer ' + await getAccessToken('corporate'), 
+        'Authorization': 'Bearer ' + await getAccessToken(account), 
         'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
@@ -25,11 +25,11 @@ export async function postData(url='', data={}) {
     return response.text();
 }
 
-export async function deleteOrder(orderID) {
-    const response = await fetch(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem('corporate-account_id')}/savedorders/${orderID}`, {
+export async function deleteOrder(account, orderID) {
+    const response = await fetch(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/savedorders/${orderID}`, {
         method: 'DELETE',
         headers: {
-            'Authorization': 'Bearer ' + await getAccessToken('corporate')
+            'Authorization': 'Bearer ' + await getAccessToken(account)
         }
     });
     

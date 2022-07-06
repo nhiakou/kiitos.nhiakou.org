@@ -4,7 +4,7 @@ import { renderMarket, renderMarkets } from '../render/market.mjs';
 import { renderPositions, renderButtons } from '../render/positions.mjs';
 
 export async function renderTradePage() {
-    const data = await getTDA();
+    const data = await getTDA('corporate');
     renderAstro(data.stocks['BRK.A']);
 
     renderMarket(data.market);

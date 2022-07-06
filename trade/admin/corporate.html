@@ -22,7 +22,7 @@
                 number.min = QUANTITY.STEP;
                 number.max = QUANTITY.MAX;
 
-                const data = await renderOrders();
+                const data = await renderOrders('corporate');
                 orders = data.orders;
                 stocks = data.stocks;
                 positions = data.positions;
@@ -30,7 +30,7 @@
 
             window.deleteAll = async button => {
                 button.disabled = true;
-                await Promise.allSettled(orders.map(order => deleteOrder(order.savedOrderId)));
+                await Promise.allSettled(orders.map(order => deleteOrder('corporate', order.savedOrderId)));
                 window.location.reload();
             }
 
@@ -43,10 +43,11 @@
             }
 
             window.placeOrder = async event => {
-                event.preventDefault();
+                //event.preventDefault();
                 const input = Object.fromEntries(new FormData(event.target));
                 stocks[input.symbol].order = positions.find(position => position.stock === input.symbol)
-                await confirmMarketOrder(input.order, stocks[input.symbol], input.quantity);
+                await confirmMarketOrder(Number(localStorage.getItem('test')), event.target.account, input.order, stocks[input.symbol], input.quantity);
+                return false;
             }
         </script>
         <style>
@@ -86,6 +87,10 @@
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
+            }
+
+            input[type="submit"] {
+                text-transform: capitalize;
             }
         </style>
     </head>
@@ -128,7 +133,8 @@
                     <br><br>
                     <input type="datetime-local">
                     <br><br>
-                    <button type="submit">Submit</button>
+                    <input type="submit" onclick="this.form.account=this.value" value="corporate">
+                    <input type="submit" onclick="this.form.account=this.value" value="personal">
                 </form>
             </fieldset>
         </main>

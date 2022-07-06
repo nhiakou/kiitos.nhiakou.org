@@ -27,32 +27,33 @@ export function renderButtons(stocks) {
 }
 
 function placeOrder(order, stock, button) {
+    const test = Number(localStorage.getItem('test'));
     const recommendedShortQuantity = Math.floor(stock.askSize / stock.bidSize);
     const recommendedLongQuantity = Math.floor(stock.bidSize / stock.askSize);
 
     if (stock.position) {
         if (stock.position.shortQuantity) {
             if (order === 'Cover') {
-                button.onclick = () => confirmMarketOrder(order, stock, stock.position.shortQuantity);
+                button.onclick = () => confirmMarketOrder(test, 'corporate', order, stock, stock.position.shortQuantity);
             } else if (order === 'Short' && recommendedShortQuantity) {
-                button.onclick = () => confirmMarketOrder(order, stock, recommendedShortQuantity);
+                button.onclick = () => confirmMarketOrder(test, 'corporate', order, stock, recommendedShortQuantity);
             } else {
                 button.disabled = true;
             }
         } else {
             if (order === 'Sell') {
-                button.onclick = () => confirmMarketOrder(order, stock, stock.position.longQuantity);
+                button.onclick = () => confirmMarketOrder(test, 'corporate', order, stock, stock.position.longQuantity);
             } else if (order === 'Buy' && recommendedLongQuantity) {
-                button.onclick = () => confirmMarketOrder(order, stock, recommendedLongQuantity);
+                button.onclick = () => confirmMarketOrder(test, 'corporate', order, stock, recommendedLongQuantity);
             } else {
                 button.disabled = true;
             }
         }
     } else {
         if (order === 'Short' && recommendedShortQuantity) {
-            button.onclick = () => confirmMarketOrder(order, stock, recommendedShortQuantity);
+            button.onclick = () => confirmMarketOrder(test, 'corporate', order, stock, recommendedShortQuantity);
         } else if (order === 'Buy' && recommendedLongQuantity) {
-            button.onclick = () => confirmMarketOrder(order, stock, recommendedLongQuantity);
+            button.onclick = () => confirmMarketOrder(test, 'corporate', order, stock, recommendedLongQuantity);
         } else {
             button.disabled = true;
         }
