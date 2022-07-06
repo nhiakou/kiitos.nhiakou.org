@@ -8,7 +8,7 @@ let intervalID = null;
 window.startAnalyzing = button => {
     button.disabled = true;
     document.getElementById('stop').disabled = false;
-    intervalID = setInterval(god, LIVE ? INTERVAL*60*1000 : 1*1000);
+    intervalID = setInterval(async () => god('yin', await renderTradePage()), LIVE ? INTERVAL*60*1000 : 1*1000);
 }
 
 window.stopAnalyzing = button => {

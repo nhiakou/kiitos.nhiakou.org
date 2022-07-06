@@ -23,7 +23,7 @@ export async function getTDA(Account) {
 }
 
 export async function confirmMarketOrder(test, account, order, stock, quantity) {
-    if (confirm(`${test ? 'TEST' : 'REAL'} ${account}: Are you sure you want to ${order} ${quantity} shares of ${stock.symbol}?`)) {
+    if (confirm(`${test ? 'TEST' : 'LIVE'} ${account.toUpperCase()}: Are you sure you want to ${order} ${quantity} shares of ${stock.symbol}?`)) {
         await placeMarketOrder(test, account, order, stock, quantity);
         window.location.reload();
     }

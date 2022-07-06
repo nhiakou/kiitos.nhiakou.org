@@ -1,15 +1,13 @@
 import { LIVE } from "/login/fetch.mjs";
-import { renderTradePage } from "../render/render.mjs";
 import { sendAlert } from "./alert.mjs";
 import { kiitos } from "./tao.mjs";
 
-export async function god() {
-   const data = await renderTradePage();
+export async function god(tao, data) {
    console.info(new Date().toLocaleString())
    console.log(data);
 
    if (!LIVE || isMarketOpen(data.market)) {
-      kiitos(data.account, data.stocks);
+      kiitos(tao, data.account, data.stocks);
       if (!LIVE || isEvery30Minutes()) sendAlert(data.stocks);
    }
 }

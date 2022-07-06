@@ -3,16 +3,32 @@
         <title>Personal Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="module">
-            import { getData, deleteOrder } from "/login/fetch.mjs";
+            import { hasExpired, getData, deleteOrder } from "/login/fetch.mjs";
+            import { god } from "../robot/buddha.mjs";
             import { getTDA } from "../tda.mjs";
             import { renderOrders } from "./orders.mjs";
             import { openStream, closeStream } from './streams.mjs';
 
-            let data, orders;
+            let data, orders, intervalID;
+
+            window.startAnalyzing = button => {
+                button.disabled = true;
+                document.getElementById('stop').disabled = false;
+                intervalID = setInterval(async () => god('yang', await getTDA('personal')), LIVE ? INTERVAL*60*1000 : 1*1000);
+            }
+
+            window.stopAnalyzing = button => {
+                button.disabled = true;
+                document.getElementById('start').disabled = false;
+                clearInterval(intervalID);
+            }
 
             window.onload = async () => {
-                data = await getTDA('personal');
-                ({ orders } = await renderOrders('personal'));
+                if (hasExpired(localStorage.getItem('personal-refresh_last_update'), localStorage.getItem('personal-refresh_token_expires_in'))) {
+                    window.location.href = '/index.html';
+                } else {
+                    ({ orders } = await renderOrders('personal'));
+                }
             }
 
             window.deleteAll = async button => {

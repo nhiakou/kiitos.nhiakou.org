@@ -3,7 +3,7 @@
         <title>Corporate Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="module">
-            import { getData, deleteOrder } from "/login/fetch.mjs";
+            import { hasExpired, getData, deleteOrder } from "/login/fetch.mjs";
             import { QUANTITY } from '../robot/tao.mjs';
             import { confirmMarketOrder } from '../tda.mjs';
             import { renderOrders } from "./orders.mjs";
@@ -13,16 +13,20 @@
             const number = document.getElementById('number-quantity');
 
             window.onload = async () => {
-                document.getElementById('test').style.backgroundColor = Number(localStorage.getItem('test')) ? 'red' : 'green';
+                if (hasExpired(localStorage.getItem('personal-refresh_last_update'), localStorage.getItem('personal-refresh_token_expires_in')) || hasExpired(localStorage.getItem('corporate-refresh_last_update'), localStorage.getItem('corporate-refresh_token_expires_in'))) {
+                    window.location.href = '/index.html';
+                } else {
+                    document.getElementById('test').style.backgroundColor = Number(localStorage.getItem('test')) ? 'red' : 'green';
 
-                range.step = QUANTITY.STEP;
-                range.min = QUANTITY.STEP;
-                range.max = QUANTITY.MAX;
-                number.step = QUANTITY.STEP;
-                number.min = QUANTITY.STEP;
-                number.max = QUANTITY.MAX;
+                    range.step = QUANTITY.STEP;
+                    range.min = QUANTITY.STEP;
+                    range.max = QUANTITY.MAX;
+                    number.step = QUANTITY.STEP;
+                    number.min = QUANTITY.STEP;
+                    number.max = QUANTITY.MAX;
 
-                ({ orders, stocks, positions } = await renderOrders('corporate'));
+                    ({ orders, stocks, positions } = await renderOrders('corporate'));
+                }
             }
 
             window.deleteAll = async button => {
