@@ -22,10 +22,7 @@
                 number.min = QUANTITY.STEP;
                 number.max = QUANTITY.MAX;
 
-                const data = await renderOrders('corporate');
-                orders = data.orders;
-                stocks = data.stocks;
-                positions = data.positions;
+                ({ orders, stocks, positions } = await renderOrders('corporate'));
             }
 
             window.deleteAll = async button => {
@@ -36,18 +33,18 @@
 
             window.updateQuantity = input => {
                 if (input === range) {
-                    number.value = input.value
+                    number.value = input.value;
                 } else {
-                    range.value = input.value
+                    range.value = input.value;
                 }
             }
 
             window.placeOrder = async event => {
-                //event.preventDefault();
+                event.preventDefault();
                 const input = Object.fromEntries(new FormData(event.target));
                 stocks[input.symbol].order = positions.find(position => position.stock === input.symbol)
                 await confirmMarketOrder(Number(localStorage.getItem('test')), event.target.account, input.order, stocks[input.symbol], input.quantity);
-                return false;
+                if (event.target.account === 'personal') window.location.href = 'personal.html';
             }
         </script>
         <style>

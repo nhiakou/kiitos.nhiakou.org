@@ -46,7 +46,7 @@ export async function placeMarketOrder(test, account, order, stock, quantity) {
 
 // buy long
 async function openLongPosition(test, account, symbol, quantity) {
-    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/${ test ? 'savedorders': 'orders' }`, {
+    const data = await postData(account, `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/${ test ? 'savedorders': 'orders' }`, {
         "orderType": "MARKET",
         "session": "NORMAL",
         "duration": "DAY",
@@ -68,7 +68,7 @@ async function openLongPosition(test, account, symbol, quantity) {
 
 // sell long
 async function closeLongPosition(test, account, symbol, quantity) {
-    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/${ test ? 'savedorders': 'orders' }`, {
+    const data = await postData(account, `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/${ test ? 'savedorders': 'orders' }`, {
         "orderType": "MARKET",
         "session": "NORMAL",
         "duration": "DAY",
@@ -90,7 +90,7 @@ async function closeLongPosition(test, account, symbol, quantity) {
 
 // sell short (borrow)
 async function openShortPosition(test, account, symbol, quantity) {
-    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/${ test ? 'savedorders': 'orders' }`, {
+    const data = await postData(account, `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/${ test ? 'savedorders': 'orders' }`, {
         "orderType": "MARKET",
         "session": "NORMAL",
         "duration": "DAY",
@@ -112,7 +112,7 @@ async function openShortPosition(test, account, symbol, quantity) {
 
 // buy to cover (return)
 async function closeShortPosition(test, account, symbol, quantity) {
-    const data = await postData(`https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/${ test ? 'savedorders': 'orders' }`, {
+    const data = await postData(account, `https://api.tdameritrade.com/v1/accounts/${localStorage.getItem(account + '-account_id')}/${ test ? 'savedorders': 'orders' }`, {
         "orderType": "MARKET",
         "session": "NORMAL",
         "duration": "DAY",

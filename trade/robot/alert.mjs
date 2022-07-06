@@ -96,7 +96,7 @@ export function mailPositionReport(test, account, order, stock, quantity) {
             }
         }
 
-        sendPositionReport('TEST ' + account, order, stock.symbol, quantity, stock.order);
+        sendPositionReport('TEST ' + account.toUpperCase(), order, stock.symbol, quantity, stock.order);
 
     } else {
         if (stock.position) {
@@ -125,7 +125,7 @@ export function mailPositionReport(test, account, order, stock, quantity) {
             }
         }
 
-        sendPositionReport('LIVE ' + account, order, stock.symbol, quantity, stock.position); 
+        sendPositionReport('LIVE ' + account.toUpperCase(), order, stock.symbol, quantity, stock.position); 
     }
 }
 
