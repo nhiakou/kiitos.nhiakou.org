@@ -3,8 +3,9 @@
         <title>Personal Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script type="module">
-            import { hasExpired, getData, deleteOrder } from "/login/fetch.mjs";
+            import { LIVE, hasExpired, getData, deleteOrder } from "/login/fetch.mjs";
             import { god } from "../robot/buddha.mjs";
+            import { TIME } from "../robot/tao.mjs";
             import { getTDA } from "../tda.mjs";
             import { renderOrders } from "./orders.mjs";
             import { openStream, closeStream } from './streams.mjs';
@@ -14,7 +15,7 @@
             window.startAnalyzing = button => {
                 button.disabled = true;
                 document.getElementById('stop').disabled = false;
-                intervalID = setInterval(async () => god('yang', await getTDA('personal')), LIVE ? INTERVAL*60*1000 : 1*1000);
+                intervalID = setInterval(async () => god('yang', await getTDA('personal')), LIVE ? TIME.yang.INTERVAL*60*1000 : 1*1000);
             }
 
             window.stopAnalyzing = button => {

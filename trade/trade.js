@@ -1,14 +1,14 @@
 import { KIITOS, LIVE, hasExpired } from "/login/fetch.mjs";
 import { renderTradePage } from "./render/render.mjs";
 import { god } from './robot/buddha.mjs';
-import { INTERVAL } from "./robot/tao.mjs";
+import { TIME } from "./robot/tao.mjs";
 
 let intervalID = null;
 
 window.startAnalyzing = button => {
     button.disabled = true;
     document.getElementById('stop').disabled = false;
-    intervalID = setInterval(async () => god('yin', await renderTradePage()), LIVE ? INTERVAL*60*1000 : 1*1000);
+    intervalID = setInterval(async () => god('yin', await renderTradePage()), LIVE ? TIME.yin.INTERVAL*60*1000 : 1*1000);
 }
 
 window.stopAnalyzing = button => {

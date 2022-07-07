@@ -8,7 +8,7 @@ export async function god(tao, data) {
 
    if (!LIVE || isMarketOpen(data.market)) {
       kiitos(tao, data.account, data.stocks);
-      if (!LIVE || isEvery30Minutes()) sendAlert(data.stocks);
+      if (!LIVE || isEvery30Minutes()) sendAlert(tao, data.stocks);
    }
 }
 

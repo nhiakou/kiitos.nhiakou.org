@@ -2,7 +2,7 @@ import { WATCHLIST } from "./stocks.mjs";
 import { formatToDollars, formatToPercents, formatToQuantity } from "/utils.mjs";
 import { sendMail } from '../admin/mail.mjs';
 
-export function sendAlert(stocks) {
+export function sendAlert(tao, stocks) {
     WATCHLIST.forEach(stock => {
         
         let position, averagePrice, quantity, change;
@@ -63,7 +63,7 @@ export function sendAlert(stocks) {
         1-Year: <b>${formatToDollars(stocks[stock]['52WkLow'])}</b> to <b>${formatToDollars(stocks[stock]['52WkHigh'])}</b>
         `;
 
-        sendMail(subject, message);
+        sendMail(tao, subject, message);
     
     });
 }
@@ -96,7 +96,7 @@ export function mailPositionReport(test, account, order, stock, quantity) {
             }
         }
 
-        sendPositionReport('TEST ' + account.toUpperCase(), order, stock.symbol, quantity, stock.order);
+        sendPositionReport('TEST', account, order, stock.symbol, quantity, stock.order);
 
     } else {
         if (stock.position) {
@@ -125,7 +125,7 @@ export function mailPositionReport(test, account, order, stock, quantity) {
             }
         }
 
-        sendPositionReport('LIVE ' + account.toUpperCase(), order, stock.symbol, quantity, stock.position); 
+        sendPositionReport('LIVE', account, order, stock.symbol, quantity, stock.position); 
     }
 }
 
@@ -133,8 +133,8 @@ function getAveragePrice(p1, q1, p2, q2) {
     return Math.round((p1*q1 + p2*q2) / (q1+q2) * 100) / 100;
 }
 
-function sendPositionReport(mode, order, symbol, quantity, position) {
-    const subject = `${mode} ${order}: ${symbol} x ${quantity}`;
+function sendPositionReport(test, account, order, symbol, quantity, position) {
+    const subject = `${test} ${account.toUpperCase()} ${order}: ${symbol} x ${quantity}`;
 
     const currentPrice = position.closingPrice || position.openingPrice;
     const totalQuantity = -position.shortQuantity || position.longQuantity;
@@ -153,5 +153,5 @@ function sendPositionReport(mode, order, symbol, quantity, position) {
     <b>Quantity:</b> ${formatToQuantity(totalQuantity)}
     `;
     
-    sendMail(subject, message);
+    sendMail(account === 'corporate' ? 'yin' : 'yang', subject, message);
 }
